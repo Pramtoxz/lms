@@ -3,7 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Download, RotateCcw, XCircle } from 'lucide-react';
+import { ArrowLeft, Download, RotateCcw } from 'lucide-react';
+import Lottie from 'lottie-react';
+import certificateAnimation from '@/assets/animations/certificate.json';
+import notPassedAnimation from '@/assets/animations/not_passed.json';
 
 interface Course {
     id: number;
@@ -26,15 +29,11 @@ export default function ExamResult({ course, result }: { course: Course; result:
             <div className="bg-muted/30 flex min-h-screen items-center justify-center p-4">
                 <Card className="w-full max-w-2xl">
                     <CardHeader className="text-center">
-                        <div className="mx-auto mb-4">
+                        <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center">
                             {result.is_passed ? (
-                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-                                    <CheckCircle className="h-12 w-12 text-green-600" />
-                                </div>
+                                <Lottie animationData={certificateAnimation} loop={false} />
                             ) : (
-                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-                                    <XCircle className="h-12 w-12 text-red-600" />
-                                </div>
+                                <Lottie animationData={notPassedAnimation} loop={true} />
                             )}
                         </div>
                         <CardTitle className="text-2xl sm:text-3xl">{result.is_passed ? 'Congratulations!' : 'Not Passed'}</CardTitle>

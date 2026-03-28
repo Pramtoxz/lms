@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Edit, Filter, Plus, Search, Trash2 } from 'lucide-react';
@@ -96,7 +97,8 @@ export default function Index({
         <AppLayout>
             <Head title={`Questions - ${course.title}`} />
 
-            <div className="space-y-4 p-4 sm:p-6 lg:p-8">
+            <TooltipProvider delayDuration={0}>
+                <div className="space-y-4 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
                         <Link href={route('admin.courses.index')}>
@@ -215,17 +217,27 @@ export default function Index({
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    <Link href={route('admin.questions.edit', question.id)}>
-                                                        <Button variant="ghost" size="icon">
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                    </Link>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Link href={route('admin.questions.edit', question.id)}>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                            </Link>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Edit Question</TooltipContent>
+                                                    </Tooltip>
                                                     <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon">
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
+                                                        <Tooltip>
+                                                            <AlertDialogTrigger asChild>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button variant="ghost" size="icon">
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                            </AlertDialogTrigger>
+                                                            <TooltipContent>Delete Question</TooltipContent>
+                                                        </Tooltip>
                                                         <AlertDialogContent>
                                                             <AlertDialogHeader>
                                                                 <AlertDialogTitle>Delete Question?</AlertDialogTitle>
@@ -270,6 +282,7 @@ export default function Index({
                     </CardContent>
                 </Card>
             </div>
+            </TooltipProvider>
         </AppLayout>
     );
 }

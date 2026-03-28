@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { BookOpen, FileQuestion, Filter, Pencil, Plus, Search, Trash2 } from 'lucide-react';
@@ -81,7 +82,8 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
         <AppLayout>
             <Head title="Manage Courses" />
 
-            <div className="space-y-4 p-4 sm:p-6 lg:p-8">
+            <TooltipProvider delayDuration={0}>
+                <div className="space-y-4 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">Courses</h1>
@@ -169,27 +171,47 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                                 <TableCell className="text-center">{course.questions_count}</TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <Link href={route('admin.courses.lessons.index', course.id)}>
-                                                            <Button variant="outline" size="sm">
-                                                                <BookOpen className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Link href={route('admin.courses.questions.index', course.id)}>
-                                                            <Button variant="outline" size="sm">
-                                                                <FileQuestion className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Link href={route('admin.courses.edit', course.id)}>
-                                                            <Button variant="outline" size="sm">
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Link href={route('admin.courses.lessons.index', course.id)}>
+                                                                    <Button variant="outline" size="sm">
+                                                                        <BookOpen className="h-4 w-4" />
+                                                                    </Button>
+                                                                </Link>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>Manage Lessons</TooltipContent>
+                                                        </Tooltip>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Link href={route('admin.courses.questions.index', course.id)}>
+                                                                    <Button variant="outline" size="sm">
+                                                                        <FileQuestion className="h-4 w-4" />
+                                                                    </Button>
+                                                                </Link>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>Manage Questions</TooltipContent>
+                                                        </Tooltip>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Link href={route('admin.courses.edit', course.id)}>
+                                                                    <Button variant="outline" size="sm">
+                                                                        <Pencil className="h-4 w-4" />
+                                                                    </Button>
+                                                                </Link>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>Edit Course</TooltipContent>
+                                                        </Tooltip>
                                                         <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                                <Button variant="outline" size="sm">
-                                                                    <Trash2 className="text-destructive h-4 w-4" />
-                                                                </Button>
-                                                            </AlertDialogTrigger>
+                                                            <Tooltip>
+                                                                <AlertDialogTrigger asChild>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Button variant="outline" size="sm">
+                                                                            <Trash2 className="text-destructive h-4 w-4" />
+                                                                        </Button>
+                                                                    </TooltipTrigger>
+                                                                </AlertDialogTrigger>
+                                                                <TooltipContent>Delete Course</TooltipContent>
+                                                            </Tooltip>
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
                                                                     <AlertDialogTitle>Delete Course</AlertDialogTitle>
@@ -326,6 +348,7 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                     </Pagination>
                 )}
             </div>
+            </TooltipProvider>
         </AppLayout>
     );
 }

@@ -41,6 +41,7 @@ export default function Player({
     enrollment: Enrollment;
 }) {
     const [lessonsOpen, setLessonsOpen] = useState(false);
+    const [descriptionExpanded, setDescriptionExpanded] = useState(false);
     const [canMarkComplete, setCanMarkComplete] = useState(false);
     const [watchTime, setWatchTime] = useState(0);
     const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
@@ -51,6 +52,10 @@ export default function Player({
 
     // Development Mode: Skip watch time requirement
     const devMode = import.meta.env.VITE_DEV_SKIP_VIDEO_WATCH === 'true';
+
+    const descriptionPreview = course.description.length > 150 
+        ? course.description.substring(0, 150) + '...' 
+        : course.description;
 
     useEffect(() => {
         setCanMarkComplete(devMode);
@@ -236,7 +241,19 @@ export default function Player({
                                 <CardTitle className="text-base">About this course</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground text-sm">{course.description}</p>
+                                <p className="text-muted-foreground text-sm whitespace-pre-line">
+                                    {descriptionExpanded ? course.description : descriptionPreview}
+                                </p>
+                                {course.description.length > 150 && (
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                                        className="mt-2 h-auto p-0 text-sm"
+                                    >
+                                        {descriptionExpanded ? 'Hide' : 'See More'}
+                                    </Button>
+                                )}
                             </CardContent>
                         </Card>
 
@@ -348,7 +365,19 @@ export default function Player({
                                 <CardTitle className="text-base">About this course</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground text-sm">{course.description}</p>
+                                <p className="text-muted-foreground text-sm whitespace-pre-line">
+                                    {descriptionExpanded ? course.description : descriptionPreview}
+                                </p>
+                                {course.description.length > 150 && (
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                                        className="mt-2 h-auto p-0 text-sm"
+                                    >
+                                        {descriptionExpanded ? 'Hide' : 'See More'}
+                                    </Button>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
