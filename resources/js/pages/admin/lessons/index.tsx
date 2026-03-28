@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Filter, Pencil, Plus, Search, Trash2, Video } from 'lucide-react';
@@ -99,7 +100,8 @@ export default function Index({ course, lessons, filters }: { course: Course; le
         <AppLayout>
             <Head title={`Lessons - ${course.title}`} />
 
-            <div className="space-y-4 p-4 sm:p-6 lg:p-8">
+            <TooltipProvider delayDuration={0}>
+                <div className="space-y-4 p-4 sm:p-6 lg:p-8">
                 <div className="flex items-center gap-4">
                     <Link href={route('admin.courses.index')}>
                         <Button variant="outline" size="icon">
@@ -190,17 +192,27 @@ export default function Index({ course, lessons, filters }: { course: Course; le
                                                 <TableCell className="text-center">{lesson.duration} min</TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <Link href={route('admin.lessons.edit', lesson.id)}>
-                                                            <Button variant="outline" size="sm">
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Link href={route('admin.lessons.edit', lesson.id)}>
+                                                                    <Button variant="outline" size="sm">
+                                                                        <Pencil className="h-4 w-4" />
+                                                                    </Button>
+                                                                </Link>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>Edit Lesson</TooltipContent>
+                                                        </Tooltip>
                                                         <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                                <Button variant="outline" size="sm">
-                                                                    <Trash2 className="text-destructive h-4 w-4" />
-                                                                </Button>
-                                                            </AlertDialogTrigger>
+                                                            <Tooltip>
+                                                                <AlertDialogTrigger asChild>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Button variant="outline" size="sm">
+                                                                            <Trash2 className="text-destructive h-4 w-4" />
+                                                                        </Button>
+                                                                    </TooltipTrigger>
+                                                                </AlertDialogTrigger>
+                                                                <TooltipContent>Delete Lesson</TooltipContent>
+                                                            </Tooltip>
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
                                                                     <AlertDialogTitle>Delete Lesson</AlertDialogTitle>
@@ -323,6 +335,7 @@ export default function Index({ course, lessons, filters }: { course: Course; le
                     </Pagination>
                 )}
             </div>
+            </TooltipProvider>
         </AppLayout>
     );
 }

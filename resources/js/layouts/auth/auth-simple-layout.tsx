@@ -1,4 +1,6 @@
 import AppLogoIcon from '@/components/app-logo-icon';
+import { FlashMessages } from '@/components/flash-messages';
+import { Toaster } from '@/components/ui/sonner';
 import { Link } from '@inertiajs/react';
 
 interface AuthLayoutProps {
@@ -29,6 +31,8 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                     {children}
                 </div>
             </div>
+            <FlashMessages />
+            <Toaster />
         </div>
     );
 }

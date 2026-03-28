@@ -48,6 +48,10 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $request->user()->roles,
                 ] : null,
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ]);
     }
 }

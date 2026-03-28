@@ -1,6 +1,8 @@
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { FlashMessages } from '@/components/flash-messages';
+import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
@@ -57,6 +59,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                     <section className="max-w-xl space-y-12">{children}</section>
                 </div>
             </div>
+            <FlashMessages />
+            <Toaster />
         </div>
     );
 }
