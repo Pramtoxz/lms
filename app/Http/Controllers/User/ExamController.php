@@ -83,8 +83,8 @@ class ExamController extends Controller
         }
 
         $questions = $course->questions()
-            ->inRandomOrder()
             ->get()
+            ->shuffle(crc32($userId.$course->id.$attemptCount))
             ->map(function ($question) {
                 return [
                     'id' => $question->id,

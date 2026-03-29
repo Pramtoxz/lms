@@ -70,12 +70,8 @@ export default function Player({
             route('courses.complete', [course.id, lesson.id]),
             {},
             {
-                preserveScroll: true,
-                onSuccess: () => {
-                    if (nextLesson) {
-                        router.visit(route('courses.player', [course.id, nextLesson.id]));
-                    }
-                },
+                preserveScroll: false,
+                // Backend will handle redirect (to exam if 100%, or back to player)
             },
         );
     };
