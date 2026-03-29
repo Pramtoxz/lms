@@ -84,7 +84,7 @@ class ExamController extends Controller
 
         $questions = $course->questions()
             ->get()
-            ->shuffle(crc32($userId . $course->id . $attemptCount))
+            ->shuffle(crc32($userId.$course->id.$attemptCount))
             ->map(function ($question) {
                 return [
                     'id' => $question->id,

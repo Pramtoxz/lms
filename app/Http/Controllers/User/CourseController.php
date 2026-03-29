@@ -71,7 +71,7 @@ class CourseController extends Controller
         }
 
         // Check if course is published
-        if (!$course->is_published) {
+        if (! $course->is_published) {
             return redirect()->route('courses.browse')
                 ->with('error', 'This course is not available for enrollment.');
         }
@@ -86,7 +86,7 @@ class CourseController extends Controller
         ]);
 
         return redirect()->route('courses.index')
-            ->with('success', 'Successfully enrolled in ' . $course->title);
+            ->with('success', 'Successfully enrolled in '.$course->title);
     }
 
     public function player(Course $course, Lesson $lesson): Response
