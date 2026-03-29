@@ -1,0 +1,11 @@
+import{c as r,a as o}from"./sonner-D6AjpCOr.js";import{r as l,j as t}from"./app-BUa6mS4Y.js";/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const d=[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"M12 5v14",key:"s699le"}]],T=r("Plus",d);/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const c=[["path",{d:"M3 6h18",key:"d0wm0j"}],["path",{d:"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6",key:"4alrt4"}],["path",{d:"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2",key:"v07s0e"}],["line",{x1:"10",x2:"10",y1:"11",y2:"17",key:"1uufr5"}],["line",{x1:"14",x2:"14",y1:"11",y2:"17",key:"xtxkd"}]],u=r("Trash2",c),m=l.forwardRef(({className:e,...a},s)=>t.jsx("div",{className:"relative w-full overflow-auto",children:t.jsx("table",{ref:s,className:o("w-full caption-bottom text-sm",e),...a})}));m.displayName="Table";const b=l.forwardRef(({className:e,...a},s)=>t.jsx("thead",{ref:s,className:o("[&_tr]:border-b",e),...a}));b.displayName="TableHeader";const i=l.forwardRef(({className:e,...a},s)=>t.jsx("tbody",{ref:s,className:o("[&_tr:last-child]:border-0",e),...a}));i.displayName="TableBody";const n=l.forwardRef(({className:e,...a},s)=>t.jsx("tfoot",{ref:s,className:o("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",e),...a}));n.displayName="TableFooter";const f=l.forwardRef(({className:e,...a},s)=>t.jsx("tr",{ref:s,className:o("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",e),...a}));f.displayName="TableRow";const x=l.forwardRef(({className:e,...a},s)=>t.jsx("th",{ref:s,className:o("h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",e),...a}));x.displayName="TableHead";const p=l.forwardRef(({className:e,...a},s)=>t.jsx("td",{ref:s,className:o("p-4 align-middle [&:has([role=checkbox])]:pr-0",e),...a}));p.displayName="TableCell";const y=l.forwardRef(({className:e,...a},s)=>t.jsx("caption",{ref:s,className:o("mt-4 text-sm text-muted-foreground",e),...a}));y.displayName="TableCaption";export{T as P,m as T,b as a,f as b,x as c,i as d,p as e,u as f};
