@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\User\CourseController as UserCourseController;
@@ -17,13 +18,20 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    // Browse all published courses (catalog)
+    Route::get('browse', [UserCourseController::class, 'browse'])->name('courses.browse');
+    Route::post('courses/{course}/enroll', [UserCourseController::class, 'enroll'])->name('courses.enroll');
+
+    // My enrolled courses
     Route::get('courses', [UserCourseController::class, 'index'])->name('courses.index');
     Route::get('courses/{course}/lessons/{lesson}', [UserCourseController::class, 'player'])->name('courses.player');
     Route::post('courses/{course}/lessons/{lesson}/complete', [UserCourseController::class, 'markComplete'])->name('courses.complete');
 
     Route::get('exams', [ExamController::class, 'index'])->name('exams.index');
     Route::get('courses/{course}/exam', [ExamController::class, 'show'])->name('courses.exam');
-    Route::post('courses/{course}/exam', [ExamController::class, 'submit'])->name('courses.exam.submit');
+    Route::post('courses/{course}/exam', [ExamController::class, 'submit'])
+        ->middleware('throttle:3,1')
+        ->name('courses.exam.submit');
     Route::get('courses/{course}/exam/{examResult}/result', [ExamController::class, 'result'])->name('courses.exam.result');
     Route::get('courses/{course}/exam/{examResult}/certificate', [ExamController::class, 'downloadCertificate'])->name('courses.exam.certificate');
 });
@@ -32,6 +40,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('courses', CourseController::class);
     Route::resource('courses.lessons', LessonController::class)->shallow();
     Route::resource('courses.questions', QuestionController::class)->shallow();
+    Route::resource('enrollments', EnrollmentController::class);
 });
 
 require __DIR__.'/settings.php';

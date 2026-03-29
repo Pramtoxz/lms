@@ -7,50 +7,60 @@ export function LottieLoading() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        let timeout: ReturnType<typeof setTimeout> | null = null;
-        let minimumDisplayTimeout: ReturnType<typeof setTimeout> | null = null;
-        let startTime: number | null = null;
+        let delayTimeout: ReturnType<typeof setTimeout> | null = null;
+        let minimumTimeout: ReturnType<typeof setTimeout> | null = null;
+        let loadingStartTime: number | null = null;
 
-        const removeStartListener = router.on('start', () => {
-            timeout = setTimeout(() => {
-                setIsLoading(true);
-                startTime = Date.now();
-            }, 500); // Delay 500ms sebelum muncul
-        });
-
-        const removeFinishListener = router.on('finish', () => {
-            if (timeout) {
-                clearTimeout(timeout);
-                timeout = null;
+        const handleStart = (event: { detail: { visit: { prefetch?: boolean } } }) => {
+            if (event.detail.visit.prefetch) {
+                return;
             }
 
-            // Jika loading sudah muncul, pastikan tampil minimal 300ms
-            if (isLoading && startTime) {
-                const elapsed = Date.now() - startTime;
-                const remaining = Math.max(0, 300 - elapsed);
+            delayTimeout = setTimeout(() => {
+                setIsLoading(true);
+                loadingStartTime = Date.now();
+            }, 250);
+        };
 
-                minimumDisplayTimeout = setTimeout(() => {
+        const handleFinish = (event: { detail: { visit: { prefetch?: boolean } } }) => {
+            if (event.detail.visit.prefetch) {
+                return;
+            }
+
+            if (delayTimeout) {
+                clearTimeout(delayTimeout);
+                delayTimeout = null;
+            }
+
+            if (loadingStartTime) {
+                const elapsed = Date.now() - loadingStartTime;
+                const remaining = Math.max(0, 500 - elapsed);
+
+                minimumTimeout = setTimeout(() => {
                     setIsLoading(false);
-                    startTime = null;
+                    loadingStartTime = null;
                 }, remaining);
             } else {
                 setIsLoading(false);
             }
-        });
+        };
+
+        const removeStartListener = router.on('start', handleStart);
+        const removeFinishListener = router.on('finish', handleFinish);
 
         return () => {
-            if (timeout) clearTimeout(timeout);
-            if (minimumDisplayTimeout) clearTimeout(minimumDisplayTimeout);
+            if (delayTimeout) clearTimeout(delayTimeout);
+            if (minimumTimeout) clearTimeout(minimumTimeout);
             removeStartListener();
             removeFinishListener();
         };
-    }, [isLoading]);
+    }, []);
 
     if (!isLoading) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-            <div className="w-64 h-64">
+            <div className="h-64 w-64">
                 <Lottie animationData={loadingAnimation} loop={true} />
             </div>
         </div>

@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid } from 'lucide-react';
+import { BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid, Search, UserPlus } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -21,8 +21,9 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const { auth } = usePage().props as { auth: { user: { roles: Array<{ name: string }> } } };
-    const isAdmin = auth.user.roles?.some((role) => role.name === 'admin');
+    const page = usePage();
+    const auth = page.props.auth as { user: { roles: Array<{ name: string }> } };
+    const isAdmin = auth?.user?.roles?.some((role) => role.name === 'admin');
 
     const adminNavItems: NavItem[] = [
         {
@@ -36,6 +37,11 @@ export function AppSidebar() {
             icon: GraduationCap,
         },
         {
+            title: 'Enrollments',
+            url: '/admin/enrollments',
+            icon: UserPlus,
+        },
+        {
             title: 'Meetings',
             url: '/admin/meetings',
             icon: Calendar,
@@ -47,6 +53,11 @@ export function AppSidebar() {
             title: 'Dashboard',
             url: '/dashboard',
             icon: LayoutGrid,
+        },
+        {
+            title: 'Browse Courses',
+            url: '/browse',
+            icon: Search,
         },
         {
             title: 'My Courses',
