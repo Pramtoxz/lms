@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { CheckCircle2, Clock, FileCheck, Filter, Play, Search } from 'lucide-react';
@@ -27,6 +27,7 @@ interface Enrollment {
     status: string;
     enrolled_at: string;
     course: Course;
+    first_lesson_id: number | null;
 }
 
 interface PaginationLink {
@@ -177,19 +178,25 @@ export default function Index({ enrollments, filters }: { enrollments: Paginated
                                                     Take Exam
                                                 </Button>
                                             </Link>
-                                            <Link href={route('courses.player', [enrollment.course.id, 1])}>
-                                                <Button variant="outline" size="icon">
-                                                    <Play className="h-4 w-4" />
-                                                </Button>
-                                            </Link>
+                                            {enrollment.first_lesson_id && (
+                                                <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
+                                                    <Button variant="outline" size="icon">
+                                                        <Play className="h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                            )}
                                         </div>
-                                    ) : (
-                                        <Link href={route('courses.player', [enrollment.course.id, 1])}>
+                                    ) : enrollment.first_lesson_id ? (
+                                        <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
                                             <Button className="w-full">
                                                 <Play className="mr-2 h-4 w-4" />
                                                 {enrollment.progress_percentage > 0 ? 'Continue Learning' : 'Start Course'}
                                             </Button>
                                         </Link>
+                                    ) : (
+                                        <Button className="w-full" disabled>
+                                            No lessons available
+                                        </Button>
                                     )}
                                 </CardContent>
                             </Card>

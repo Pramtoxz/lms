@@ -53,9 +53,7 @@ export default function Player({
     // Development Mode: Skip watch time requirement
     const devMode = import.meta.env.VITE_DEV_SKIP_VIDEO_WATCH === 'true';
 
-    const descriptionPreview = course.description.length > 150 
-        ? course.description.substring(0, 150) + '...' 
-        : course.description;
+    const descriptionPreview = course.description.length > 150 ? course.description.substring(0, 150) + '...' : course.description;
 
     useEffect(() => {
         setCanMarkComplete(devMode);

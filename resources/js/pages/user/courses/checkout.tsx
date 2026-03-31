@@ -93,8 +93,8 @@ export default function Checkout({ course, user }: { course: Course; user: User 
 
                                 <div className="bg-muted rounded-lg p-4">
                                     <p className="text-sm">
-                                        By clicking "Proceed to Payment", you will be redirected to RazerMS payment gateway to complete your
-                                        purchase securely.
+                                        By clicking "Proceed to Payment", you will be redirected to RazerMS payment gateway to complete your purchase
+                                        securely.
                                     </p>
                                 </div>
 

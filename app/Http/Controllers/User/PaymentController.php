@@ -122,10 +122,19 @@ class PaymentController extends Controller
 
     public function handleReturn(Request $request, string $order_id)
     {
-        // Get transaction
-        $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+        $transaction = Transaction::with('course')->where('order_id', $order_id)->firstOrFail();
 
-        // Verify signature
+        auth()->loginUsingId($transaction->user_id);
+        $request->session()->regenerate();
+
+        if ($transaction->status === 'paid') {
+            return Inertia::render('user/courses/payment-result', [
+                'success' => true,
+                'course' => $transaction->course,
+                'transaction' => $transaction,
+            ]);
+        }
+
         $key = md5(
             $request->tranID .
             $request->orderid .
@@ -143,34 +152,59 @@ class PaymentController extends Controller
             $request->skey
         );
 
-        // Check if payment is successful
-        if (!$isValid || $request->status != '00') {
+        if (!$isValid) {
             $transaction->update([
                 'status' => 'failed',
                 'transaction_id' => $request->tranID ?? null,
             ]);
 
-            // Login the user first before redirect
-            auth()->loginUsingId($transaction->user_id);
-
-            return redirect()->route('courses.browse')
-                ->with('error', 'Payment failed or invalid. Please try again.');
+            return Inertia::render('user/courses/payment-result', [
+                'success' => false,
+                'course' => $transaction->course,
+                'transaction' => $transaction,
+                'message' => 'Invalid payment signature. Please contact support.',
+            ]);
         }
 
-        // Payment successful
+        if ($request->status != '00') {
+            $transaction->update([
+                'status' => 'failed',
+                'transaction_id' => $request->tranID ?? null,
+            ]);
+
+            return Inertia::render('user/courses/payment-result', [
+                'success' => false,
+                'course' => $transaction->course,
+                'transaction' => $transaction,
+                'message' => 'Payment was not completed. You can try again.',
+            ]);
+        }
+
+        if ((float) $request->amount != (float) $transaction->amount) {
+            $transaction->update([
+                'status' => 'failed',
+                'transaction_id' => $request->tranID ?? null,
+            ]);
+
+            return Inertia::render('user/courses/payment-result', [
+                'success' => false,
+                'course' => $transaction->course,
+                'transaction' => $transaction,
+                'message' => 'Payment amount mismatch. Please contact support.',
+            ]);
+        }
+
         $transaction->update([
             'status' => 'paid',
             'transaction_id' => $request->tranID,
             'payment_date' => now(),
         ]);
 
-        // Check if already enrolled (prevent duplicate)
         $existingEnrollment = Enrollment::where('user_id', $transaction->user_id)
             ->where('course_id', $transaction->course_id)
             ->first();
 
         if (!$existingEnrollment) {
-            // Auto-enroll user
             Enrollment::create([
                 'user_id' => $transaction->user_id,
                 'course_id' => $transaction->course_id,
@@ -180,11 +214,11 @@ class PaymentController extends Controller
             ]);
         }
 
-        // Login the user before redirect
-        auth()->loginUsingId($transaction->user_id);
-
-        return redirect()->route('courses.index')
-            ->with('success', 'Payment successful! You are now enrolled in ' . $transaction->course->title);
+        return Inertia::render('user/courses/payment-result', [
+            'success' => true,
+            'course' => $transaction->course,
+            'transaction' => $transaction,
+        ]);
     }
 
     public function transactions(): Response
