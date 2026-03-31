@@ -27,6 +27,8 @@ interface Course {
     id: number;
     title: string;
     description: string;
+    price: string;
+    is_free: boolean;
     is_published: boolean;
     lessons_count: number;
     questions_count: number;
@@ -50,16 +52,22 @@ interface PaginatedCourses {
 interface Filters {
     search?: string;
     status?: string;
+    type?: string;
 }
 
 export default function Index({ courses, filters }: { courses: PaginatedCourses; filters: Filters }) {
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || 'all');
+    const [type, setType] = useState(filters.type || 'all');
 
     const debouncedSearch = useDebouncedCallback((value: string) => {
         router.get(
             route('admin.courses.index'),
-            { search: value, status: status !== 'all' ? status : undefined },
+            { 
+                search: value, 
+                status: status !== 'all' ? status : undefined,
+                type: type !== 'all' ? type : undefined
+            },
             { preserveState: true, replace: true },
         );
     }, 500);
@@ -71,7 +79,28 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
 
     const handleStatusChange = (value: string) => {
         setStatus(value);
-        router.get(route('admin.courses.index'), { search, status: value !== 'all' ? value : undefined }, { preserveState: true, replace: true });
+        router.get(
+            route('admin.courses.index'), 
+            { 
+                search, 
+                status: value !== 'all' ? value : undefined,
+                type: type !== 'all' ? type : undefined
+            }, 
+            { preserveState: true, replace: true }
+        );
+    };
+
+    const handleTypeChange = (value: string) => {
+        setType(value);
+        router.get(
+            route('admin.courses.index'), 
+            { 
+                search, 
+                status: status !== 'all' ? status : undefined,
+                type: value !== 'all' ? value : undefined
+            }, 
+            { preserveState: true, replace: true }
+        );
     };
 
     const handleDelete = (id: number) => {
@@ -105,7 +134,7 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-4 sm:grid-cols-3">
                             <div className="space-y-2">
                                 <Label htmlFor="search">Search</Label>
                                 <div className="relative">
@@ -132,6 +161,19 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                     </SelectContent>
                                 </Select>
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="type">Course Type</Label>
+                                <Select value={type} onValueChange={handleTypeChange}>
+                                    <SelectTrigger id="type">
+                                        <SelectValue placeholder="All Types" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Types</SelectItem>
+                                        <SelectItem value="free">Free Courses</SelectItem>
+                                        <SelectItem value="paid">Paid Courses</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -144,6 +186,7 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                     <TableRow>
                                         <TableHead className="w-16">No</TableHead>
                                         <TableHead>Title</TableHead>
+                                        <TableHead>Price</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-center">Lessons</TableHead>
                                         <TableHead className="text-center">Questions</TableHead>
@@ -158,6 +201,15 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                                     {(courses.current_page - 1) * courses.per_page + index + 1}
                                                 </TableCell>
                                                 <TableCell className="font-medium">{course.title}</TableCell>
+                                                <TableCell>
+                                                    {course.is_free ? (
+                                                        <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800">
+                                                            FREE
+                                                        </span>
+                                                    ) : (
+                                                        <span className="font-medium">RM {parseFloat(course.price).toFixed(2)}</span>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell>
                                                     <span
                                                         className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
@@ -233,7 +285,7 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="h-24 text-center">
+                                            <TableCell colSpan={7} className="h-24 text-center">
                                                 No courses found.
                                             </TableCell>
                                         </TableRow>
@@ -257,13 +309,24 @@ export default function Index({ courses, filters }: { courses: PaginatedCourses;
                                             <CardTitle className="text-lg">{course.title}</CardTitle>
                                             <CardDescription className="mt-1 line-clamp-2">{course.description}</CardDescription>
                                         </div>
-                                        <span
-                                            className={`ml-2 inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                                                course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                            }`}
-                                        >
-                                            {course.is_published ? 'Published' : 'Draft'}
-                                        </span>
+                                        <div className="ml-2 flex flex-col gap-1">
+                                            {course.is_free ? (
+                                                <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800">
+                                                    FREE
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-800">
+                                                    RM {parseFloat(course.price).toFixed(2)}
+                                                </span>
+                                            )}
+                                            <span
+                                                className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                                                    course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                }`}
+                                            >
+                                                {course.is_published ? 'Published' : 'Draft'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent>

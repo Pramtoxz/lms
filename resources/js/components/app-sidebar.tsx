@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid, Search, UserPlus } from 'lucide-react';
+import { BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid, Receipt, Search, UserPlus } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -42,6 +42,11 @@ export function AppSidebar() {
             icon: UserPlus,
         },
         {
+            title: 'Transactions',
+            url: '/admin/transactions',
+            icon: Receipt,
+        },
+        {
             title: 'Meetings',
             url: '/admin/meetings',
             icon: Calendar,
@@ -63,6 +68,11 @@ export function AppSidebar() {
             title: 'My Courses',
             url: '/courses',
             icon: GraduationCap,
+        },
+        {
+            title: 'Transactions',
+            url: '/transactions',
+            icon: Receipt,
         },
         {
             title: 'Timetable',

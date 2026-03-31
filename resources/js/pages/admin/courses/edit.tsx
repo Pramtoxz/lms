@@ -14,6 +14,8 @@ interface Course {
     title: string;
     description: string;
     thumbnail: string | null;
+    price: number;
+    is_free: boolean;
     certificate_template: string | null;
     certificate_font: string | null;
     exam_duration: number;
@@ -25,6 +27,8 @@ export default function Edit({ course, availableFonts }: { course: Course; avail
         title: course.title || '',
         description: course.description || '',
         thumbnail: null as File | null,
+        price: String(course.price || 0),
+        is_free: course.is_free ?? true,
         certificate_template: null as File | null,
         certificate_font: course.certificate_font || 'dejavu',
         exam_duration: course.exam_duration || 30,
@@ -101,6 +105,41 @@ export default function Edit({ course, availableFonts }: { course: Course; avail
                                     onChange={(e) => setData('thumbnail', e.target.files?.[0] || null)}
                                 />
                                 {errors.thumbnail && <p className="text-destructive text-sm">{errors.thumbnail}</p>}
+                            </div>
+
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="price">Price (MYR)</Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={data.price}
+                                        onChange={(e) => setData('price', e.target.value)}
+                                        placeholder="0.00"
+                                        disabled={data.is_free}
+                                    />
+                                    <p className="text-muted-foreground text-xs">Current: RM{course.price}</p>
+                                    {errors.price && <p className="text-destructive text-sm">{errors.price}</p>}
+                                </div>
+
+                                <div className="flex items-center space-x-2 pt-8">
+                                    <Checkbox
+                                        id="is_free"
+                                        checked={data.is_free}
+                                        onCheckedChange={(checked) => {
+                                            const isChecked: boolean = checked === true;
+                                            setData('is_free', isChecked);
+                                            if (isChecked) {
+                                                setData('price', '0');
+                                            }
+                                        }}
+                                    />
+                                    <Label htmlFor="is_free" className="cursor-pointer">
+                                        Free Course
+                                    </Label>
+                                </div>
                             </div>
 
                             <div className="space-y-2">

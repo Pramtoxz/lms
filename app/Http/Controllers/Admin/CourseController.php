@@ -22,11 +22,19 @@ class CourseController extends Controller
             $query->where('is_published', $request->status === 'published');
         }
 
+        if ($request->filled('type')) {
+            if ($request->type === 'free') {
+                $query->where('is_free', true);
+            } elseif ($request->type === 'paid') {
+                $query->where('is_free', false);
+            }
+        }
+
         $courses = $query->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('admin/courses/index', [
             'courses' => $courses,
-            'filters' => $request->only(['search', 'status']),
+            'filters' => $request->only(['search', 'status', 'type']),
         ]);
     }
 
@@ -45,6 +53,8 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'thumbnail' => 'nullable|image|max:2048',
+            'price' => 'required|numeric|min:0|decimal:0,2',
+            'is_free' => 'required|boolean',
             'certificate_template' => 'nullable|image|max:5120',
             'certificate_font' => 'nullable|string',
             'exam_duration' => 'required|integer|min:5|max:180',
@@ -81,6 +91,8 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'thumbnail' => 'nullable|image|max:2048',
+            'price' => 'required|numeric|min:0|decimal:0,2',
+            'is_free' => 'required|boolean',
             'certificate_template' => 'nullable|image|max:5120',
             'certificate_font' => 'nullable|string',
             'exam_duration' => 'required|integer|min:5|max:180',

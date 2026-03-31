@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { CheckCircle2, Clock, FileCheck, Filter, Play, Search } from 'lucide-react';
@@ -16,6 +17,8 @@ interface Course {
     title: string;
     description: string;
     thumbnail: string | null;
+    price: string;
+    is_free: boolean;
 }
 
 interface Enrollment {
@@ -136,6 +139,18 @@ export default function Index({ enrollments, filters }: { enrollments: Paginated
                                             <CheckCircle2 className="h-4 w-4 text-white" />
                                         </div>
                                     )}
+                                    {/* Price Badge */}
+                                    <div className="absolute top-2 left-2">
+                                        {enrollment.course.is_free ? (
+                                            <Badge variant="secondary" className="bg-green-500 text-white hover:bg-green-600">
+                                                FREE
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="secondary" className="bg-blue-500 text-white hover:bg-blue-600">
+                                                RM {parseFloat(enrollment.course.price).toFixed(2)}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
                                 <CardHeader>
                                     <CardTitle className="line-clamp-2 text-lg">{enrollment.course.title}</CardTitle>

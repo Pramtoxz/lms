@@ -4,14 +4,19 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\User\CourseController as UserCourseController;
 use App\Http\Controllers\User\ExamController;
+use App\Http\Controllers\User\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
+
+// Payment callback - must be outside auth middleware for RazerMS callback
+Route::match(['get', 'post'], 'payment/return/{order_id}', [PaymentController::class, 'handleReturn'])->name('payment.return');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
@@ -34,13 +39,25 @@ Route::middleware(['auth'])->group(function () {
         ->name('courses.exam.submit');
     Route::get('courses/{course}/exam/{examResult}/result', [ExamController::class, 'result'])->name('courses.exam.result');
     Route::get('courses/{course}/exam/{examResult}/certificate', [ExamController::class, 'downloadCertificate'])->name('courses.exam.certificate');
+
+    // Payment routes (except callback which is above)
+    Route::get('courses/{course}/checkout', [PaymentController::class, 'checkout'])->name('courses.checkout');
+    Route::post('courses/{course}/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
+    Route::get('transactions', [PaymentController::class, 'transactions'])->name('transactions.index');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('courses', CourseController::class);
     Route::resource('courses.lessons', LessonController::class)->shallow();
     Route::resource('courses.questions', QuestionController::class)->shallow();
-    Route::resource('enrollments', EnrollmentController::class);
+    
+    // User-centric enrollment management
+    Route::get('enrollments', [EnrollmentController::class, 'index'])->name('enrollments.index');
+    Route::get('enrollments/{user}', [EnrollmentController::class, 'show'])->name('enrollments.show');
+    Route::post('enrollments/{user}', [EnrollmentController::class, 'store'])->name('enrollments.store');
+    Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
+    
+    Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
 });
 
 require __DIR__.'/settings.php';
