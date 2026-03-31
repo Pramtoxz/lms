@@ -44,9 +44,15 @@ class CourseController extends Controller
             $query->whereLike('title', "%{$request->search}%");
         }
 
-        $courses = $query->latest()->paginate(12)->withQueryString();
+        if ($request->filled('type')) {
+            if ($request->type === 'free') {
+                $query->where('is_free', true);
+            } elseif ($request->type === 'paid') {
+                $query->where('is_free', false);
+            }
+        }
 
-        // Get user's enrolled course IDs
+        $courses = $query->latest()->paginate(12)->withQueryString();
         $enrolledCourseIds = Enrollment::where('user_id', auth()->id())
             ->pluck('course_id')
             ->toArray();
@@ -54,13 +60,12 @@ class CourseController extends Controller
         return Inertia::render('user/courses/browse', [
             'courses' => $courses,
             'enrolledCourseIds' => $enrolledCourseIds,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'type']),
         ]);
     }
 
     public function enroll(Course $course)
     {
-        // Check if already enrolled
         $existing = Enrollment::where('user_id', auth()->id())
             ->where('course_id', $course->id)
             ->first();
@@ -69,14 +74,14 @@ class CourseController extends Controller
             return redirect()->route('courses.index')
                 ->with('error', 'You are already enrolled in this course.');
         }
-
-        // Check if course is published
         if (! $course->is_published) {
             return redirect()->route('courses.browse')
                 ->with('error', 'This course is not available for enrollment.');
         }
-
-        // Create enrollment
+        if (! $course->is_free) {
+            return redirect()->route('courses.checkout', $course->id)
+                ->with('info', 'This is a paid course. Please complete payment to enroll.');
+        }
         Enrollment::create([
             'user_id' => auth()->id(),
             'course_id' => $course->id,

@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, CheckCircle2, Search } from 'lucide-react';
+import { BookOpen, CheckCircle2, Search, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -13,6 +16,8 @@ interface Course {
     description: string;
     thumbnail: string | null;
     lessons_count: number;
+    price: string;
+    is_free: boolean;
 }
 
 interface PaginatedCourses {
@@ -30,18 +35,24 @@ export default function Browse({
 }: {
     courses: PaginatedCourses;
     enrolledCourseIds: number[];
-    filters: { search?: string };
+    filters: { search?: string; type?: string };
 }) {
     const [search, setSearch] = useState(filters.search || '');
+    const [type, setType] = useState(filters.type || 'all');
 
     const debouncedSearch = useDebouncedCallback((value: string) => {
-        router.get(route('courses.browse'), { search: value }, { preserveState: true, replace: true });
+        router.get(route('courses.browse'), { search: value, type: type !== 'all' ? type : undefined }, { preserveState: true, replace: true });
     }, 500);
 
     useEffect(() => {
         debouncedSearch(search);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
+
+    const handleTypeChange = (value: string) => {
+        setType(value);
+        router.get(route('courses.browse'), { search, type: value !== 'all' ? value : undefined }, { preserveState: true, replace: true });
+    };
 
     const handleEnroll = (courseId: number) => {
         router.post(route('courses.enroll', courseId));
@@ -65,17 +76,40 @@ export default function Browse({
                     </Link>
                 </div>
 
-                {/* Search */}
-                <div className="relative">
-                    <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                        type="text"
-                        placeholder="Search courses..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9"
-                    />
-                </div>
+                {/* Filters */}
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="search">Search</Label>
+                                <div className="relative">
+                                    <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                                    <Input
+                                        id="search"
+                                        type="text"
+                                        placeholder="Search courses..."
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        className="pl-9"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="type">Course Type</Label>
+                                <Select value={type} onValueChange={handleTypeChange}>
+                                    <SelectTrigger id="type">
+                                        <SelectValue placeholder="All Courses" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Courses</SelectItem>
+                                        <SelectItem value="free">Free Courses</SelectItem>
+                                        <SelectItem value="paid">Paid Courses</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Course Grid */}
                 {courses.data.length === 0 ? (
@@ -98,6 +132,18 @@ export default function Browse({
                                             <BookOpen className="text-muted-foreground h-12 w-12" />
                                         </div>
                                     )}
+                                    {/* Price Badge */}
+                                    <div className="absolute top-2 right-2">
+                                        {course.is_free ? (
+                                            <Badge variant="secondary" className="bg-green-500 text-white hover:bg-green-600">
+                                                FREE
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="secondary" className="bg-blue-500 text-white hover:bg-blue-600">
+                                                RM {parseFloat(course.price).toFixed(2)}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <CardHeader className="flex-1 pb-3">
@@ -120,9 +166,14 @@ export default function Browse({
                                                 Enrolled
                                             </Button>
                                         </Link>
-                                    ) : (
+                                    ) : course.is_free ? (
                                         <Button onClick={() => handleEnroll(course.id)} className="w-full">
                                             Enroll Now
+                                        </Button>
+                                    ) : (
+                                        <Button onClick={() => handleEnroll(course.id)} className="w-full">
+                                            <ShoppingCart className="mr-2 h-4 w-4" />
+                                            Buy Now - RM {parseFloat(course.price).toFixed(2)}
                                         </Button>
                                     )}
                                 </CardFooter>
@@ -139,7 +190,7 @@ export default function Browse({
                                 key={page}
                                 variant={page === courses.current_page ? 'default' : 'outline'}
                                 size="sm"
-                                onClick={() => router.get(route('courses.browse'), { search, page })}
+                                onClick={() => router.get(route('courses.browse'), { search, type: type !== 'all' ? type : undefined, page })}
                             >
                                 {page}
                             </Button>

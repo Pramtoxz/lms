@@ -15,6 +15,8 @@ class Course extends Model
         'title',
         'description',
         'thumbnail',
+        'price',
+        'is_free',
         'certificate_template',
         'certificate_font',
         'exam_duration',
@@ -24,6 +26,8 @@ class Course extends Model
     protected function casts(): array
     {
         return [
+            'price' => 'decimal:2',
+            'is_free' => 'boolean',
             'is_published' => 'boolean',
         ];
     }
@@ -51,5 +55,10 @@ class Course extends Model
     public function examResults(): HasMany
     {
         return $this->hasMany(ExamResult::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 }
