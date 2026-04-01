@@ -67,6 +67,8 @@ class CourseSeeder extends Seeder
                 'title' => 'PHP Dasar',
                 'description' => 'Belajar PHP dari nol hingga bisa membuat aplikasi web dinamis. Materi lengkap dengan studi kasus.',
                 'is_published' => true,
+                'price' => 9,
+                'is_free' => 0,
                 'lessons' => [
                     ['title' => '1. Intro PHP', 'url' => 'https://www.youtube.com/watch?v=l1W2OwV5rgY', 'duration' => 10],
                     ['title' => '2. Instalasi & Persiapan', 'url' => 'https://www.youtube.com/watch?v=l1W2OwV5rgY', 'duration' => 18],
@@ -83,6 +85,8 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Laravel 11 untuk Pemula',
                 'description' => 'Belajar framework Laravel dari dasar hingga membuat aplikasi CRUD lengkap. Cocok untuk yang sudah paham PHP.',
+                'price' => 25,
+                'is_free' => 0,
                 'is_published' => true,
                 'lessons' => [
                     ['title' => '1. Intro Laravel', 'url' => 'https://www.youtube.com/watch?v=ElZJeKxGCuI', 'duration' => 12],
@@ -115,8 +119,6 @@ class CourseSeeder extends Seeder
                     'order' => $index + 1,
                 ]);
             }
-
-            // Generate 10 questions dengan jawaban benar semua A untuk testing
             for ($i = 1; $i <= 10; $i++) {
                 Question::create([
                     'course_id' => $course->id,
@@ -125,7 +127,7 @@ class CourseSeeder extends Seeder
                     'option_b' => 'Opsi B',
                     'option_c' => 'Opsi C',
                     'option_d' => 'Opsi D',
-                    'correct_answer' => 'a', // Semua jawaban benar adalah A
+                    'correct_answer' => 'a', 
                 ]);
             }
         }
