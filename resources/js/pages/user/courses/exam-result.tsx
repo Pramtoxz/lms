@@ -1,12 +1,12 @@
+import certificateAnimation from '@/assets/animations/certificate.json';
+import notPassedAnimation from '@/assets/animations/not_passed.json';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Download, RotateCcw } from 'lucide-react';
 import Lottie from 'lottie-react';
-import certificateAnimation from '@/assets/animations/certificate.json';
-import notPassedAnimation from '@/assets/animations/not_passed.json';
+import { ArrowLeft, Download, RotateCcw } from 'lucide-react';
 
 interface Course {
     id: number;

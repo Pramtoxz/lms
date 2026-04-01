@@ -1,10 +1,11 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { Receipt } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Clock, Receipt } from 'lucide-react';
 
 interface Course {
     id: number;
@@ -17,7 +18,7 @@ interface Transaction {
     transaction_id: string | null;
     amount: string;
     currency: string;
-    status: 'pending' | 'paid' | 'failed';
+    status: 'pending' | 'paid' | 'failed' | 'expired';
     payment_method: string;
     payment_date: string | null;
     created_at: string;
@@ -41,17 +42,27 @@ interface PaginatedTransactions {
 
 export default function Index({ transactions }: { transactions: PaginatedTransactions }) {
     const getStatusBadge = (status: string) => {
-        const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-            paid: 'default',
-            pending: 'secondary',
-            failed: 'destructive',
+        const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }> = {
+            paid: { variant: 'default', className: 'bg-green-500 hover:bg-green-600' },
+            pending: { variant: 'secondary', className: 'bg-yellow-500 hover:bg-yellow-600 text-white' },
+            failed: { variant: 'destructive' },
+            expired: { variant: 'outline' },
         };
 
+        const config = variants[status] || { variant: 'default' };
         return (
-            <Badge variant={variants[status] || 'default'}>
+            <Badge variant={config.variant} className={config.className}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
             </Badge>
         );
+    };
+
+    const isExpired = (transaction: Transaction) => {
+        if (transaction.status !== 'pending') return false;
+        const createdAt = new Date(transaction.created_at);
+        const now = new Date();
+        const diffMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+        return diffMinutes > 30;
     };
 
     return (
@@ -76,6 +87,7 @@ export default function Index({ transactions }: { transactions: PaginatedTransac
                                         <TableHead>Amount</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Payment Date</TableHead>
+                                        <TableHead>Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -97,11 +109,23 @@ export default function Index({ transactions }: { transactions: PaginatedTransac
                                                           })
                                                         : '-'}
                                                 </TableCell>
+                                                <TableCell>
+                                                    {transaction.status === 'pending' && !isExpired(transaction) ? (
+                                                        <Link href={route('courses.checkout', transaction.course.id)}>
+                                                            <Button size="sm" variant="outline">
+                                                                <Clock className="mr-2 h-4 w-4" />
+                                                                Continue Payment
+                                                            </Button>
+                                                        </Link>
+                                                    ) : (
+                                                        '-'
+                                                    )}
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="h-24 text-center">
+                                            <TableCell colSpan={6} className="h-24 text-center">
                                                 No transactions found.
                                             </TableCell>
                                         </TableRow>
@@ -145,6 +169,14 @@ export default function Index({ transactions }: { transactions: PaginatedTransac
                                                 : '-'}
                                         </span>
                                     </div>
+                                    {transaction.status === 'pending' && !isExpired(transaction) && (
+                                        <Link href={route('courses.checkout', transaction.course.id)} className="mt-3 block">
+                                            <Button size="sm" variant="outline" className="w-full">
+                                                <Clock className="mr-2 h-4 w-4" />
+                                                Continue Payment
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </CardContent>
                             </Card>
                         ))

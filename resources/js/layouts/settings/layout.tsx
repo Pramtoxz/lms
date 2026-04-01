@@ -1,7 +1,7 @@
+import { FlashMessages } from '@/components/flash-messages';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FlashMessages } from '@/components/flash-messages';
 import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';

@@ -1,7 +1,7 @@
+import loadingAnimation from '@/assets/animations/loading2.json';
 import { router } from '@inertiajs/react';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
-import loadingAnimation from '@/assets/animations/loading2.json';
 
 export function LottieLoading() {
     const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +59,7 @@ export function LottieLoading() {
     if (!isLoading) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <div className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
             <div className="h-64 w-64">
                 <Lottie animationData={loadingAnimation} loop={true} />
             </div>

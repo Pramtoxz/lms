@@ -87,11 +87,7 @@ export default function Index({ transactions, filters }: { transactions: Paginat
             failed: 'destructive',
         };
 
-        return (
-            <Badge variant={variants[status] || 'default'}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-            </Badge>
-        );
+        return <Badge variant={variants[status] || 'default'}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>;
     };
 
     return (

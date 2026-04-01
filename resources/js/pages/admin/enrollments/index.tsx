@@ -23,21 +23,11 @@ interface PaginatedUsers {
     total: number;
 }
 
-export default function Index({
-    users,
-    filters,
-}: {
-    users: PaginatedUsers;
-    filters: { search?: string };
-}) {
+export default function Index({ users, filters }: { users: PaginatedUsers; filters: { search?: string } }) {
     const [search, setSearch] = useState(filters.search || '');
 
     const debouncedSearch = useDebouncedCallback((value: string) => {
-        router.get(
-            route('admin.enrollments.index'),
-            { search: value },
-            { preserveState: true, replace: true },
-        );
+        router.get(route('admin.enrollments.index'), { search: value }, { preserveState: true, replace: true });
     }, 500);
 
     useEffect(() => {
@@ -58,8 +48,14 @@ export default function Index({
 
                 {/* Search */}
                 <div className="relative">
-                    <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-                    <Input type="text" placeholder="Search user by name or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                        type="text"
+                        placeholder="Search user by name or email..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9"
+                    />
                 </div>
 
                 {/* Mobile: Cards */}
@@ -105,7 +101,7 @@ export default function Index({
                                     <TableCell className="font-medium">{user.name}</TableCell>
                                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                                     <TableCell className="text-center">
-                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                                        <span className="bg-primary/10 text-primary inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
                                             {user.enrollments_count}
                                         </span>
                                     </TableCell>

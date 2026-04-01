@@ -1,3 +1,13 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -52,6 +62,7 @@ export default function Show({
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || 'all');
     const [showAddForm, setShowAddForm] = useState(false);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const { data, setData, post, errors, reset } = useForm<{
         course_id: string;
@@ -81,9 +92,11 @@ export default function Show({
         );
     };
 
-    const handleDelete = (id: number) => {
-        if (confirm('Are you sure you want to delete this enrollment?')) {
-            router.delete(route('admin.enrollments.destroy', id));
+    const handleDelete = () => {
+        if (deleteId) {
+            router.delete(route('admin.enrollments.destroy', deleteId), {
+                onFinish: () => setDeleteId(null),
+            });
         }
     };
 
@@ -171,8 +184,14 @@ export default function Show({
                 {/* Filters */}
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="relative">
-                        <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-                        <Input type="text" placeholder="Search course..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                        <Input
+                            type="text"
+                            placeholder="Search course..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
                     </div>
                     <Select value={status} onValueChange={handleStatusChange}>
                         <SelectTrigger>
@@ -207,7 +226,7 @@ export default function Show({
                                     <p className="text-muted-foreground text-xs">Enrolled</p>
                                     <p className="text-sm">{new Date(enrollment.enrolled_at).toLocaleDateString()}</p>
                                 </div>
-                                <Button variant="destructive" size="sm" onClick={() => handleDelete(enrollment.id)} className="w-full">
+                                <Button variant="destructive" size="sm" onClick={() => setDeleteId(enrollment.id)} className="w-full">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete
                                 </Button>
@@ -242,7 +261,7 @@ export default function Show({
                                     </TableCell>
                                     <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString()}</TableCell>
                                     <TableCell>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(enrollment.id)}>
+                                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(enrollment.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
@@ -288,6 +307,21 @@ export default function Show({
                     </div>
                 )}
             </div>
+
+            <AlertDialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete this enrollment. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

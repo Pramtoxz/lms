@@ -14,7 +14,9 @@ class CourseController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Enrollment::with('course')
+        $query = Enrollment::with(['course.lessons' => function ($q) {
+            $q->orderBy('order')->limit(1);
+        }])
             ->where('user_id', auth()->id());
 
         if ($request->filled('search')) {
@@ -28,6 +30,12 @@ class CourseController extends Controller
         }
 
         $enrollments = $query->latest()->paginate(10)->withQueryString();
+
+        $enrollments->getCollection()->transform(function ($enrollment) {
+            $enrollment->first_lesson_id = $enrollment->course->lessons->first()?->id;
+
+            return $enrollment;
+        });
 
         return Inertia::render('user/courses/index', [
             'enrollments' => $enrollments,
