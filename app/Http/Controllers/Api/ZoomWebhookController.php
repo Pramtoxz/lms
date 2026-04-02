@@ -44,6 +44,10 @@ class ZoomWebhookController extends Controller
                     $this->handleParticipantLeft($payload);
                     break;
 
+                case 'meeting.ended':
+                    $this->handleMeetingEnded($payload);
+                    break;
+
                 default:
                     Log::info('Unhandled Zoom event: ' . $event);
             }
@@ -164,5 +168,30 @@ class ZoomWebhookController extends Controller
                 'meeting_id' => $meeting->id,
             ]);
         }
+    }
+
+    private function handleMeetingEnded(array $payload)
+    {
+        $meetingId = $payload['object']['id'] ?? null;
+
+        if (!$meetingId) {
+            return;
+        }
+
+        $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
+        if (!$meeting) {
+            Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+            return;
+        }
+
+        $endTime = now();
+        $updatedCount = Attendance::where('zoom_meeting_id', $meeting->id)
+            ->whereNull('check_out_time')
+            ->update(['check_out_time' => $endTime]);
+
+        Log::info('Meeting ended, auto-checkout attendees', [
+            'meeting_id' => $meeting->id,
+            'attendees_updated' => $updatedCount,
+        ]);
     }
 }
