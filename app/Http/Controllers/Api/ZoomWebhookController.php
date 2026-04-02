@@ -21,7 +21,7 @@ class ZoomWebhookController extends Controller
             ]);
         }
 
-        // Verify webhook signature for security
+        // Verify webhook signature for security (only for actual events, not validation)
         $this->verifyWebhookSignature($request);
 
         $event = $request->input('event');
