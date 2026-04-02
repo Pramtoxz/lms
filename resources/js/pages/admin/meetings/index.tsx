@@ -5,6 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, Clock, Plus, Search, Trash2, Video } from 'lucide-react';
 import { useState } from 'react';
@@ -44,6 +54,10 @@ interface Props {
 export default function Index({ meetings, courses, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [courseId, setCourseId] = useState(filters.course_id || 'all');
+    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; meeting: Meeting | null }>({
+        open: false,
+        meeting: null,
+    });
 
     const debouncedSearch = useDebouncedCallback((value: string) => {
         router.get(
@@ -68,8 +82,13 @@ export default function Index({ meetings, courses, filters }: Props) {
     };
 
     const handleDelete = (meeting: Meeting) => {
-        if (confirm(`Delete meeting for "${meeting.course.title}"?`)) {
-            router.delete(route('admin.meetings.destroy', meeting.id));
+        setDeleteDialog({ open: true, meeting });
+    };
+
+    const confirmDelete = () => {
+        if (deleteDialog.meeting) {
+            router.delete(route('admin.meetings.destroy', deleteDialog.meeting.id));
+            setDeleteDialog({ open: false, meeting: null });
         }
     };
 
@@ -300,6 +319,23 @@ export default function Index({ meetings, courses, filters }: Props) {
                     </div>
                 )}
             </div>
+
+            <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, meeting: null })}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Meeting</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete the meeting for "{deleteDialog.meeting?.course.title}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
