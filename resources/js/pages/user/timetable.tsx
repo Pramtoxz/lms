@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, Clock, Video, Lock } from 'lucide-react';
+import { Calendar, Video, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 interface Course {

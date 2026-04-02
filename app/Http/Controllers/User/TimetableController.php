@@ -13,7 +13,7 @@ class TimetableController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         $enrolledCourseIds = $user->enrollments()->pluck('course_id');
         $now = now();
 
@@ -33,7 +33,7 @@ class TimetableController extends Controller
         $query = ZoomMeeting::with(['course', 'attendances' => function ($q) use ($user) {
             $q->where('user_id', $user->id);
         }])
-        ->whereIn('course_id', $enrolledCourseIds);
+            ->whereIn('course_id', $enrolledCourseIds);
 
         if ($request->filled('status')) {
             if ($request->status === 'upcoming') {
@@ -69,8 +69,8 @@ class TimetableController extends Controller
 
         // Check if user is enrolled in the course
         $isEnrolled = $user->enrollments()->where('course_id', $meeting->course_id)->exists();
-        
-        if (!$isEnrolled) {
+
+        if (! $isEnrolled) {
             return back()->withErrors(['error' => 'You are not enrolled in this course.']);
         }
 

@@ -9,13 +9,16 @@ use Illuminate\Support\Facades\Log;
 class ZoomService
 {
     private Client $client;
+
     private string $accountId;
+
     private string $clientId;
+
     private string $clientSecret;
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client;
         $this->accountId = config('services.zoom.account_id');
         $this->clientId = config('services.zoom.client_id');
         $this->clientSecret = config('services.zoom.client_secret');
@@ -31,7 +34,7 @@ class ZoomService
             try {
                 $response = $this->client->post('https://zoom.us/oauth/token', [
                     'headers' => [
-                        'Authorization' => 'Basic ' . base64_encode($this->clientId . ':' . $this->clientSecret),
+                        'Authorization' => 'Basic '.base64_encode($this->clientId.':'.$this->clientSecret),
                         'Content-Type' => 'application/x-www-form-urlencoded',
                     ],
                     'form_params' => [
@@ -41,11 +44,11 @@ class ZoomService
                 ]);
 
                 $data = json_decode($response->getBody()->getContents(), true);
-                
+
                 return $data['access_token'];
             } catch (\Exception $e) {
-                Log::error('Zoom OAuth Error: ' . $e->getMessage());
-                throw new \Exception('Failed to get Zoom access token: ' . $e->getMessage());
+                Log::error('Zoom OAuth Error: '.$e->getMessage());
+                throw new \Exception('Failed to get Zoom access token: '.$e->getMessage());
             }
         });
     }
@@ -60,7 +63,7 @@ class ZoomService
 
             $response = $this->client->post('https://api.zoom.us/v2/users/me/meetings', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Authorization' => 'Bearer '.$accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => [
@@ -83,8 +86,8 @@ class ZoomService
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (\Exception $e) {
-            Log::error('Zoom Create Meeting Error: ' . $e->getMessage());
-            throw new \Exception('Failed to create Zoom meeting: ' . $e->getMessage());
+            Log::error('Zoom Create Meeting Error: '.$e->getMessage());
+            throw new \Exception('Failed to create Zoom meeting: '.$e->getMessage());
         }
     }
 
@@ -98,14 +101,14 @@ class ZoomService
 
             $this->client->delete("https://api.zoom.us/v2/meetings/{$meetingId}", [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Authorization' => 'Bearer '.$accessToken,
                 ],
             ]);
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Zoom Delete Meeting Error: ' . $e->getMessage());
-            throw new \Exception('Failed to delete Zoom meeting: ' . $e->getMessage());
+            Log::error('Zoom Delete Meeting Error: '.$e->getMessage());
+            throw new \Exception('Failed to delete Zoom meeting: '.$e->getMessage());
         }
     }
 }

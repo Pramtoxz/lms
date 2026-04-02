@@ -7,9 +7,9 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {

@@ -127,7 +127,7 @@ class CourseSeeder extends Seeder
                     'option_b' => 'Opsi B',
                     'option_c' => 'Opsi C',
                     'option_d' => 'Opsi D',
-                    'correct_answer' => 'a', 
+                    'correct_answer' => 'a',
                 ]);
             }
         }

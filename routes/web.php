@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\User\CourseController as UserCourseController;
 use App\Http\Controllers\User\ExamController;
 use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\TimetableController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -47,30 +50,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transactions', [PaymentController::class, 'transactions'])->name('transactions.index');
 
     // Timetable (Zoom meetings)
-    Route::get('timetable', [\App\Http\Controllers\User\TimetableController::class, 'index'])->name('timetable.index');
-    Route::post('meetings/{meeting}/join', [\App\Http\Controllers\User\TimetableController::class, 'join'])->name('meetings.join');
+    Route::get('timetable', [TimetableController::class, 'index'])->name('timetable.index');
+    Route::post('meetings/{meeting}/join', [TimetableController::class, 'join'])->name('meetings.join');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('courses', CourseController::class);
     Route::resource('courses.lessons', LessonController::class)->shallow();
     Route::resource('courses.questions', QuestionController::class)->shallow();
-    
+
     // User-centric enrollment management
     Route::get('enrollments', [EnrollmentController::class, 'index'])->name('enrollments.index');
     Route::get('enrollments/{user}', [EnrollmentController::class, 'show'])->name('enrollments.show');
     Route::post('enrollments/{user}', [EnrollmentController::class, 'store'])->name('enrollments.store');
     Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
-    
+
     Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
-    
+
     // Zoom meetings management
-    Route::get('meetings', [\App\Http\Controllers\Admin\MeetingController::class, 'index'])->name('meetings.index');
-    Route::get('meetings/create', [\App\Http\Controllers\Admin\MeetingController::class, 'create'])->name('meetings.create');
-    Route::post('meetings', [\App\Http\Controllers\Admin\MeetingController::class, 'store'])->name('meetings.store');
-    Route::delete('meetings/{meeting}', [\App\Http\Controllers\Admin\MeetingController::class, 'destroy'])->name('meetings.destroy');
-    
-    Route::get('attendances', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('meetings', [MeetingController::class, 'index'])->name('meetings.index');
+    Route::get('meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
+    Route::post('meetings', [MeetingController::class, 'store'])->name('meetings.store');
+    Route::delete('meetings/{meeting}', [MeetingController::class, 'destroy'])->name('meetings.destroy');
+
+    Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
 });
 
 require __DIR__.'/settings.php';

@@ -21,6 +21,7 @@ class CancelExpiredTransactions extends Command
 
         if ($count === 0) {
             $this->info('No expired transactions found.');
+
             return self::SUCCESS;
         }
 

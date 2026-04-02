@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\ZoomMeeting;
 use App\Services\ZoomService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -76,13 +77,13 @@ class MeetingController extends Controller
 
         try {
             $course = Course::findOrFail($validated['course_id']);
-            
+
             // Format start_time to ISO 8601 (Zoom format)
-            $startTime = \Carbon\Carbon::parse($validated['start_time'])->format('Y-m-d\TH:i:s\Z');
-            
+            $startTime = Carbon::parse($validated['start_time'])->format('Y-m-d\TH:i:s\Z');
+
             // Create meeting via Zoom API
             $zoomMeeting = $this->zoomService->createMeeting(
-                $course->title . ' - Live Class',
+                $course->title.' - Live Class',
                 $startTime,
                 $validated['duration']
             );
@@ -109,7 +110,7 @@ class MeetingController extends Controller
         try {
             // Delete from Zoom
             $this->zoomService->deleteMeeting($meeting->zoom_meeting_id);
-            
+
             // Delete from database
             $meeting->delete();
 

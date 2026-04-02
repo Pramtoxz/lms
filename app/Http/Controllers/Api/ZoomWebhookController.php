@@ -15,7 +15,7 @@ class ZoomWebhookController extends Controller
     {
         if ($request->input('event') === 'endpoint.url_validation') {
             $plainToken = $request->input('payload.plainToken');
-            
+
             return response()->json([
                 'plainToken' => $plainToken,
                 'encryptedToken' => hash_hmac('sha256', $plainToken, config('services.zoom.webhook_secret_token')),
@@ -53,12 +53,13 @@ class ZoomWebhookController extends Controller
                     break;
 
                 default:
-                    Log::info('Unhandled Zoom event: ' . $event);
+                    Log::info('Unhandled Zoom event: '.$event);
             }
 
             return response()->json(['status' => 'success'], 200);
         } catch (\Exception $e) {
-            Log::error('Zoom Webhook Error: ' . $e->getMessage());
+            Log::error('Zoom Webhook Error: '.$e->getMessage());
+
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
@@ -67,13 +68,14 @@ class ZoomWebhookController extends Controller
     {
         $meetingId = $payload['object']['id'] ?? null;
 
-        if (!$meetingId) {
+        if (! $meetingId) {
             return;
         }
 
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
-        if (!$meeting) {
+        if (! $meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+
             return;
         }
 
@@ -90,24 +92,25 @@ class ZoomWebhookController extends Controller
     private function verifyWebhookSignature(Request $request)
     {
         $secretToken = config('services.zoom.webhook_secret_token');
-        
+
         if (empty($secretToken)) {
             Log::warning('Zoom webhook secret token not configured');
+
             return;
         }
 
         $signature = $request->header('x-zm-signature');
         $timestamp = $request->header('x-zm-request-timestamp');
-        
-        if (!$signature || !$timestamp) {
+
+        if (! $signature || ! $timestamp) {
             Log::error('Zoom webhook: Missing signature headers');
             abort(401, 'Unauthorized');
         }
 
-        $message = "v0:{$timestamp}:" . $request->getContent();
+        $message = "v0:{$timestamp}:".$request->getContent();
         $hashForVerify = hash_hmac('sha256', $message, $secretToken);
         $expectedSignature = "v0={$hashForVerify}";
-        
+
         if ($signature !== $expectedSignature) {
             Log::error('Zoom webhook: Invalid signature', [
                 'expected' => $expectedSignature,
@@ -124,13 +127,14 @@ class ZoomWebhookController extends Controller
         $participantUserId = $payload['object']['participant']['user_id'] ?? null;
         $participantUserName = $payload['object']['participant']['user_name'] ?? null;
 
-        if (!$meetingId) {
+        if (! $meetingId) {
             return;
         }
 
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
-        if (!$meeting) {
+        if (! $meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+
             return;
         }
 
@@ -179,13 +183,14 @@ class ZoomWebhookController extends Controller
         $participantUserId = $payload['object']['participant']['user_id'] ?? null;
         $participantUserName = $payload['object']['participant']['user_name'] ?? null;
 
-        if (!$meetingId) {
+        if (! $meetingId) {
             return;
         }
 
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
-        if (!$meeting) {
+        if (! $meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+
             return;
         }
 
@@ -200,7 +205,7 @@ class ZoomWebhookController extends Controller
             }
         }
 
-        if (!$attendance && $participantUserId) {
+        if (! $attendance && $participantUserId) {
             $attendance = Attendance::where('zoom_user_id', $participantUserId)
                 ->where('zoom_meeting_id', $meeting->id)
                 ->first();
@@ -208,7 +213,7 @@ class ZoomWebhookController extends Controller
 
         if ($attendance) {
             $attendance->update(['check_out_time' => now()]);
-            
+
             Log::info('Participant left recorded', [
                 'attendance_id' => $attendance->id,
                 'user_name' => $participantUserName,
@@ -227,18 +232,19 @@ class ZoomWebhookController extends Controller
     {
         $meetingId = $payload['object']['id'] ?? null;
 
-        if (!$meetingId) {
+        if (! $meetingId) {
             return;
         }
 
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
-        if (!$meeting) {
+        if (! $meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+
             return;
         }
 
         $endTime = now();
-        
+
         $meeting->update(['ended_at' => $endTime]);
 
         $updatedCount = Attendance::where('zoom_meeting_id', $meeting->id)

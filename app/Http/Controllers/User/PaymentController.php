@@ -52,7 +52,7 @@ class PaymentController extends Controller
     public function processPayment(Request $request, Course $course)
     {
         // No validation needed - use auth user data directly
-        
+
         // Check if course is free
         if ($course->is_free) {
             return redirect()->route('courses.browse')
@@ -83,7 +83,7 @@ class PaymentController extends Controller
             $orderId = $pendingTransaction->order_id;
         } else {
             // Generate unique order ID
-            $orderId = 'LMS-' . time() . '-' . $course->id;
+            $orderId = 'LMS-'.time().'-'.$course->id;
 
             // Create new pending transaction
             Transaction::create([
@@ -116,7 +116,7 @@ class PaymentController extends Controller
             return Inertia::location($paymentUrl);
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Payment gateway error: ' . $e->getMessage());
+                ->with('error', 'Payment gateway error: '.$e->getMessage());
         }
     }
 
@@ -136,11 +136,11 @@ class PaymentController extends Controller
         }
 
         $key = md5(
-            $request->tranID .
-            $request->orderid .
-            $request->status .
-            $request->domain .
-            $request->amount .
+            $request->tranID.
+            $request->orderid.
+            $request->status.
+            $request->domain.
+            $request->amount.
             $request->currency
         );
 
@@ -152,7 +152,7 @@ class PaymentController extends Controller
             $request->skey
         );
 
-        if (!$isValid) {
+        if (! $isValid) {
             $transaction->update([
                 'status' => 'failed',
                 'transaction_id' => $request->tranID ?? null,
@@ -204,7 +204,7 @@ class PaymentController extends Controller
             ->where('course_id', $transaction->course_id)
             ->first();
 
-        if (!$existingEnrollment) {
+        if (! $existingEnrollment) {
             Enrollment::create([
                 'user_id' => $transaction->user_id,
                 'course_id' => $transaction->course_id,
