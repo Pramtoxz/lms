@@ -13,8 +13,6 @@ class ZoomWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        // Verify webhook (Zoom sends validation request on first setup)
-        // Zoom sends: {"event": "endpoint.url_validation", "payload": {"plainToken": "..."}}
         if ($request->input('event') === 'endpoint.url_validation') {
             $plainToken = $request->input('payload.plainToken');
             
@@ -35,10 +33,14 @@ class ZoomWebhookController extends Controller
         try {
             switch ($event) {
                 case 'meeting.participant_joined':
+                case 'meeting.participant_joined_meeting':
+                case 'meeting.participant_host_joined_meeting':
                     $this->handleParticipantJoined($payload);
                     break;
 
                 case 'meeting.participant_left':
+                case 'meeting.participant_left_meeting':
+                case 'meeting.participant_host_left_meeting':
                     $this->handleParticipantLeft($payload);
                     break;
 
