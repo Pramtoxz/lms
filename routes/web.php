@@ -18,9 +18,6 @@ Route::get('/', function () {
 // Payment callback - must be outside auth middleware for RazerMS callback
 Route::match(['get', 'post'], 'payment/return/{order_id}', [PaymentController::class, 'handleReturn'])->name('payment.return');
 
-// Zoom webhook - must be outside auth middleware for Zoom callback
-Route::post('api/zoom/webhook', [\App\Http\Controllers\Api\ZoomWebhookController::class, 'handle'])->name('zoom.webhook');
-
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
