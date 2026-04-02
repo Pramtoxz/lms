@@ -46,13 +46,17 @@ interface Props {
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
     courses: Course[];
+    counts: {
+        upcoming: number;
+        ongoing: number;
+    };
     filters: {
         search?: string;
         course_id?: string;
     };
 }
 
-export default function Index({ meetings, courses, filters }: Props) {
+export default function Index({ meetings, courses, counts, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [courseId, setCourseId] = useState(filters.course_id || 'all');
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; meeting: Meeting | null }>({
@@ -198,16 +202,18 @@ export default function Index({ meetings, courses, filters }: Props) {
                                             <TableCell className="font-mono text-xs">{meeting.zoom_meeting_id}</TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        asChild
-                                                    >
-                                                        <a href={meeting.start_url} target="_blank" rel="noopener noreferrer">
-                                                            <Video className="h-4 w-4" />
-                                                            Start
-                                                        </a>
-                                                    </Button>
+                                                    {status.label !== 'Past' && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            asChild
+                                                        >
+                                                            <a href={meeting.start_url} target="_blank" rel="noopener noreferrer">
+                                                                <Video className="h-4 w-4" />
+                                                                Start
+                                                            </a>
+                                                        </Button>
+                                                    )}
                                                     <Button
                                                         variant="destructive"
                                                         size="sm"
@@ -258,12 +264,14 @@ export default function Index({ meetings, courses, filters }: Props) {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            <Button variant="outline" size="sm" className="flex-1" asChild>
-                                                <a href={meeting.start_url} target="_blank" rel="noopener noreferrer">
-                                                    <Video className="h-4 w-4" />
-                                                    Start Meeting
-                                                </a>
-                                            </Button>
+                                            {status.label !== 'Past' && (
+                                                <Button variant="outline" size="sm" className="flex-1" asChild>
+                                                    <a href={meeting.start_url} target="_blank" rel="noopener noreferrer">
+                                                        <Video className="h-4 w-4" />
+                                                        Start Meeting
+                                                    </a>
+                                                </Button>
+                                            )}
                                             <Button
                                                 variant="destructive"
                                                 size="sm"

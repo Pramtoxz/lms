@@ -25,6 +25,7 @@ interface Meeting {
     duration: number;
     zoom_meeting_id: string;
     join_url: string;
+    ended_at: string | null;
     attendances: Attendance[];
 }
 
@@ -62,7 +63,9 @@ export default function Timetable({ meetings, counts, filters }: Props) {
         router.post(route('meetings.join', meeting.id));
     };
 
-    const getStatus = (startTime: string, duration: number) => {
+    const getStatus = (startTime: string, duration: number, endedAt: string | null) => {
+        if (endedAt) return { label: 'Past', variant: 'outline' as const, canJoin: false };
+        
         const now = new Date();
         const start = new Date(startTime);
         const end = new Date(start.getTime() + duration * 60000);
@@ -145,7 +148,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                             </Card>
                         ) : (
                             meetings.data.map((meeting) => {
-                                const status = getStatus(meeting.start_time, meeting.duration);
+                                const status = getStatus(meeting.start_time, meeting.duration, meeting.ended_at);
                                 const hasAttended = meeting.attendances.length > 0;
                                 const attendance = meeting.attendances[0];
 
