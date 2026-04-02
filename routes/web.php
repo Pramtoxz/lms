@@ -18,6 +18,9 @@ Route::get('/', function () {
 // Payment callback - must be outside auth middleware for RazerMS callback
 Route::match(['get', 'post'], 'payment/return/{order_id}', [PaymentController::class, 'handleReturn'])->name('payment.return');
 
+// Zoom webhook - must be outside auth middleware for Zoom callback
+Route::post('api/zoom/webhook', [\App\Http\Controllers\Api\ZoomWebhookController::class, 'handle'])->name('zoom.webhook');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
@@ -25,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Browse all published courses (catalog)
     Route::get('browse', [UserCourseController::class, 'browse'])->name('courses.browse');
+    Route::get('courses/{course}/detail', [UserCourseController::class, 'show'])->name('courses.show');
     Route::post('courses/{course}/enroll', [UserCourseController::class, 'enroll'])->name('courses.enroll');
 
     // My enrolled courses
@@ -44,6 +48,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('courses/{course}/checkout', [PaymentController::class, 'checkout'])->name('courses.checkout');
     Route::post('courses/{course}/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
     Route::get('transactions', [PaymentController::class, 'transactions'])->name('transactions.index');
+
+    // Timetable (Zoom meetings)
+    Route::get('timetable', [\App\Http\Controllers\User\TimetableController::class, 'index'])->name('timetable.index');
+    Route::post('meetings/{meeting}/join', [\App\Http\Controllers\User\TimetableController::class, 'join'])->name('meetings.join');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -58,6 +66,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
     
     Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    
+    // Zoom meetings management
+    Route::get('meetings', [\App\Http\Controllers\Admin\MeetingController::class, 'index'])->name('meetings.index');
+    Route::get('meetings/create', [\App\Http\Controllers\Admin\MeetingController::class, 'create'])->name('meetings.create');
+    Route::post('meetings', [\App\Http\Controllers\Admin\MeetingController::class, 'store'])->name('meetings.store');
+    Route::delete('meetings/{meeting}', [\App\Http\Controllers\Admin\MeetingController::class, 'destroy'])->name('meetings.destroy');
 });
 
 require __DIR__.'/settings.php';

@@ -9,6 +9,7 @@ use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -17,7 +18,7 @@ class CourseController extends Controller
         $query = Enrollment::with(['course.lessons' => function ($q) {
             $q->orderBy('order')->limit(1);
         }])
-            ->where('user_id', auth()->id());
+            ->where('user_id', Auth::id());
 
         if ($request->filled('search')) {
             $query->whereHas('course', function ($q) use ($request) {
@@ -61,7 +62,7 @@ class CourseController extends Controller
         }
 
         $courses = $query->latest()->paginate(12)->withQueryString();
-        $enrolledCourseIds = Enrollment::where('user_id', auth()->id())
+        $enrolledCourseIds = Enrollment::where('user_id', Auth::id())
             ->pluck('course_id')
             ->toArray();
 
@@ -72,9 +73,31 @@ class CourseController extends Controller
         ]);
     }
 
+    public function show(Course $course): Response
+    {
+        if (! $course->is_published) {
+            abort(404, 'Course not found');
+        }
+
+        $course->loadCount('lessons', 'questions');
+        $course->load(['lessons' => function ($q) {
+            $q->orderBy('order');
+        }]);
+
+        $enrollment = Enrollment::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->first();
+
+        return Inertia::render('user/courses/show', [
+            'course' => $course,
+            'isEnrolled' => $enrollment !== null,
+            'enrollment' => $enrollment,
+        ]);
+    }
+
     public function enroll(Course $course)
     {
-        $existing = Enrollment::where('user_id', auth()->id())
+        $existing = Enrollment::where('user_id', Auth::id())
             ->where('course_id', $course->id)
             ->first();
 
@@ -91,7 +114,7 @@ class CourseController extends Controller
                 ->with('info', 'This is a paid course. Please complete payment to enroll.');
         }
         Enrollment::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'course_id' => $course->id,
             'progress_percentage' => 0,
             'status' => 'ongoing',
@@ -108,7 +131,7 @@ class CourseController extends Controller
             abort(404);
         }
 
-        $enrollment = Enrollment::where('user_id', auth()->id())
+        $enrollment = Enrollment::where('user_id', Auth::id())
             ->where('course_id', $course->id)
             ->firstOrFail();
 
@@ -124,7 +147,7 @@ class CourseController extends Controller
 
     public function markComplete(Course $course, Lesson $lesson)
     {
-        $enrollment = Enrollment::where('user_id', auth()->id())
+        $enrollment = Enrollment::where('user_id', Auth::id())
             ->where('course_id', $course->id)
             ->firstOrFail();
 

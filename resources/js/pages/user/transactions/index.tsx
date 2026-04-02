@@ -43,10 +43,10 @@ interface PaginatedTransactions {
 export default function Index({ transactions }: { transactions: PaginatedTransactions }) {
     const getStatusBadge = (status: string) => {
         const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }> = {
-            paid: { variant: 'default', className: 'bg-green-500 hover:bg-green-600' },
+            paid: { variant: 'default', className: 'bg-green-500 hover:bg-green-600 text-white' },
             pending: { variant: 'secondary', className: 'bg-yellow-500 hover:bg-yellow-600 text-white' },
             failed: { variant: 'destructive' },
-            expired: { variant: 'outline' },
+            expired: { variant: 'secondary', className: 'bg-gray-500 hover:bg-gray-600 text-white' },
         };
 
         const config = variants[status] || { variant: 'default' };
