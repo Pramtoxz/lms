@@ -13,11 +13,14 @@ class ZoomWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        // Verify webhook (Zoom sends verification request on first setup)
-        if ($request->has('plainToken')) {
+        // Verify webhook (Zoom sends validation request on first setup)
+        // Zoom sends: {"event": "endpoint.url_validation", "payload": {"plainToken": "..."}}
+        if ($request->input('event') === 'endpoint.url_validation') {
+            $plainToken = $request->input('payload.plainToken');
+            
             return response()->json([
-                'plainToken' => $request->plainToken,
-                'encryptedToken' => hash_hmac('sha256', $request->plainToken, config('services.zoom.webhook_secret_token')),
+                'plainToken' => $plainToken,
+                'encryptedToken' => hash_hmac('sha256', $plainToken, config('services.zoom.webhook_secret_token')),
             ]);
         }
 
