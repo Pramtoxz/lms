@@ -62,26 +62,27 @@ class ZoomWebhookController extends Controller
     {
         $secretToken = config('services.zoom.webhook_secret_token');
         
-        // Skip verification if secret token not configured (for initial setup)
         if (empty($secretToken)) {
             Log::warning('Zoom webhook secret token not configured');
             return;
         }
 
-        $authHeader = $request->header('authorization');
+        $signature = $request->header('x-zm-signature');
+        $timestamp = $request->header('x-zm-request-timestamp');
         
-        if (!$authHeader) {
-            Log::error('Zoom webhook: Missing authorization header');
+        if (!$signature || !$timestamp) {
+            Log::error('Zoom webhook: Missing signature headers');
             abort(401, 'Unauthorized');
         }
 
-        // Extract token from "Bearer {token}" format
-        $receivedToken = str_replace('Bearer ', '', $authHeader);
+        $message = "v0:{$timestamp}:" . $request->getContent();
+        $hashForVerify = hash_hmac('sha256', $message, $secretToken);
+        $expectedSignature = "v0={$hashForVerify}";
         
-        if ($receivedToken !== $secretToken) {
+        if ($signature !== $expectedSignature) {
             Log::error('Zoom webhook: Invalid signature', [
-                'expected' => $secretToken,
-                'received' => $receivedToken,
+                'expected' => $expectedSignature,
+                'received' => $signature,
             ]);
             abort(401, 'Unauthorized');
         }
