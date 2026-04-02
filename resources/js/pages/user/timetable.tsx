@@ -37,12 +37,16 @@ interface Props {
         total: number;
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
+    counts: {
+        upcoming: number;
+        ongoing: number;
+    };
     filters: {
         status?: string;
     };
 }
 
-export default function Timetable({ meetings, filters }: Props) {
+export default function Timetable({ meetings, counts, filters }: Props) {
     const [activeTab, setActiveTab] = useState(filters.status || 'upcoming');
 
     const handleTabChange = (value: string) => {
@@ -107,8 +111,22 @@ export default function Timetable({ meetings, filters }: Props) {
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                     <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                        <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+                        <TabsTrigger value="upcoming" className="relative">
+                            Upcoming
+                            {counts.upcoming > 0 && (
+                                <Badge variant="destructive" className="ml-2 h-5 min-w-5 px-1 text-xs">
+                                    {counts.upcoming}
+                                </Badge>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="ongoing" className="relative">
+                            Ongoing
+                            {counts.ongoing > 0 && (
+                                <Badge variant="destructive" className="ml-2 h-5 min-w-5 px-1 text-xs">
+                                    {counts.ongoing}
+                                </Badge>
+                            )}
+                        </TabsTrigger>
                         <TabsTrigger value="past">Past</TabsTrigger>
                     </TabsList>
 

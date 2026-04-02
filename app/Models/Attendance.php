@@ -38,6 +38,8 @@ class Attendance extends Model
     protected $fillable = [
         'user_id',
         'zoom_meeting_id',
+        'user_name',
+        'zoom_user_id',
         'check_in_time',
         'check_out_time',
     ];

@@ -33,6 +33,7 @@ interface Meeting {
     zoom_meeting_id: string;
     join_url: string;
     start_url: string;
+    ended_at: string | null;
 }
 
 interface Props {
@@ -92,7 +93,9 @@ export default function Index({ meetings, courses, filters }: Props) {
         }
     };
 
-    const getStatus = (startTime: string, duration: number) => {
+    const getStatus = (startTime: string, duration: number, endedAt: string | null) => {
+        if (endedAt) return { label: 'Past', variant: 'outline' as const };
+        
         const now = new Date();
         const start = new Date(startTime);
         const end = new Date(start.getTime() + duration * 60000);
@@ -183,7 +186,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                                 </TableRow>
                             ) : (
                                 meetings.data.map((meeting) => {
-                                    const status = getStatus(meeting.start_time, meeting.duration);
+                                    const status = getStatus(meeting.start_time, meeting.duration, meeting.ended_at);
                                     return (
                                         <TableRow key={meeting.id}>
                                             <TableCell className="font-medium">{meeting.course.title}</TableCell>
@@ -232,7 +235,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                         </Card>
                     ) : (
                         meetings.data.map((meeting) => {
-                            const status = getStatus(meeting.start_time, meeting.duration);
+                            const status = getStatus(meeting.start_time, meeting.duration, meeting.ended_at);
                             return (
                                 <Card key={meeting.id}>
                                     <CardHeader className="pb-3">

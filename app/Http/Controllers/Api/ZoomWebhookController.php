@@ -32,6 +32,10 @@ class ZoomWebhookController extends Controller
 
         try {
             switch ($event) {
+                case 'meeting.started':
+                    $this->handleMeetingStarted($payload);
+                    break;
+
                 case 'meeting.participant_joined':
                 case 'meeting.participant_joined_meeting':
                 case 'meeting.participant_host_joined_meeting':
@@ -57,6 +61,27 @@ class ZoomWebhookController extends Controller
             Log::error('Zoom Webhook Error: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
+    }
+
+    private function handleMeetingStarted(array $payload)
+    {
+        $meetingId = $payload['object']['id'] ?? null;
+
+        if (!$meetingId) {
+            return;
+        }
+
+        $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
+        if (!$meeting) {
+            Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
+            return;
+        }
+
+        $meeting->update(['ended_at' => null]);
+
+        Log::info('Meeting started', [
+            'meeting_id' => $meeting->id,
+        ]);
     }
 
     /**
@@ -96,76 +121,104 @@ class ZoomWebhookController extends Controller
     {
         $meetingId = $payload['object']['id'] ?? null;
         $participantEmail = $payload['object']['participant']['email'] ?? null;
+        $participantUserId = $payload['object']['participant']['user_id'] ?? null;
+        $participantUserName = $payload['object']['participant']['user_name'] ?? null;
 
-        if (!$meetingId || !$participantEmail) {
+        if (!$meetingId) {
             return;
         }
 
-        // Find meeting in database
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
         if (!$meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
             return;
         }
 
-        // Find user by email
-        $user = User::where('email', $participantEmail)->first();
-        if (!$user) {
-            Log::warning('User not found', ['email' => $participantEmail]);
-            return;
+        $user = null;
+        if ($participantEmail) {
+            $user = User::where('email', $participantEmail)->first();
         }
 
-        // Record or update check-in time
-        Attendance::updateOrCreate(
-            [
-                'user_id' => $user->id,
-                'zoom_meeting_id' => $meeting->id,
-            ],
-            [
-                'check_in_time' => now(),
-            ]
-        );
+        if ($user) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'zoom_meeting_id' => $meeting->id,
+                ],
+                [
+                    'user_name' => $participantUserName,
+                    'zoom_user_id' => $participantUserId,
+                    'check_in_time' => now(),
+                ]
+            );
 
-        Log::info('Participant joined recorded', [
-            'user_id' => $user->id,
-            'meeting_id' => $meeting->id,
-        ]);
+            Log::info('Participant joined recorded', [
+                'user_id' => $user->id,
+                'meeting_id' => $meeting->id,
+            ]);
+        } else {
+            Attendance::create([
+                'zoom_meeting_id' => $meeting->id,
+                'user_name' => $participantUserName,
+                'zoom_user_id' => $participantUserId,
+                'check_in_time' => now(),
+            ]);
+
+            Log::info('Guest participant joined recorded', [
+                'user_name' => $participantUserName,
+                'zoom_user_id' => $participantUserId,
+                'meeting_id' => $meeting->id,
+            ]);
+        }
     }
 
     private function handleParticipantLeft(array $payload)
     {
         $meetingId = $payload['object']['id'] ?? null;
         $participantEmail = $payload['object']['participant']['email'] ?? null;
+        $participantUserId = $payload['object']['participant']['user_id'] ?? null;
+        $participantUserName = $payload['object']['participant']['user_name'] ?? null;
 
-        if (!$meetingId || !$participantEmail) {
+        if (!$meetingId) {
             return;
         }
 
-        // Find meeting in database
         $meeting = ZoomMeeting::where('zoom_meeting_id', $meetingId)->first();
         if (!$meeting) {
             Log::warning('Meeting not found in database', ['zoom_meeting_id' => $meetingId]);
             return;
         }
 
-        // Find user by email
-        $user = User::where('email', $participantEmail)->first();
-        if (!$user) {
-            Log::warning('User not found', ['email' => $participantEmail]);
-            return;
+        $attendance = null;
+
+        if ($participantEmail) {
+            $user = User::where('email', $participantEmail)->first();
+            if ($user) {
+                $attendance = Attendance::where('user_id', $user->id)
+                    ->where('zoom_meeting_id', $meeting->id)
+                    ->first();
+            }
         }
 
-        // Update check-out time
-        $attendance = Attendance::where('user_id', $user->id)
-            ->where('zoom_meeting_id', $meeting->id)
-            ->first();
+        if (!$attendance && $participantUserId) {
+            $attendance = Attendance::where('zoom_user_id', $participantUserId)
+                ->where('zoom_meeting_id', $meeting->id)
+                ->first();
+        }
 
         if ($attendance) {
             $attendance->update(['check_out_time' => now()]);
             
             Log::info('Participant left recorded', [
-                'user_id' => $user->id,
+                'attendance_id' => $attendance->id,
+                'user_name' => $participantUserName,
                 'meeting_id' => $meeting->id,
+            ]);
+        } else {
+            Log::warning('Attendance not found for participant left', [
+                'email' => $participantEmail,
+                'zoom_user_id' => $participantUserId,
+                'user_name' => $participantUserName,
             ]);
         }
     }
@@ -185,6 +238,9 @@ class ZoomWebhookController extends Controller
         }
 
         $endTime = now();
+        
+        $meeting->update(['ended_at' => $endTime]);
+
         $updatedCount = Attendance::where('zoom_meeting_id', $meeting->id)
             ->whereNull('check_out_time')
             ->update(['check_out_time' => $endTime]);

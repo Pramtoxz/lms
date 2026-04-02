@@ -14,25 +14,40 @@ class TimetableController extends Controller
     {
         $user = $request->user();
         
-        // Get enrolled course IDs
         $enrolledCourseIds = $user->enrollments()->pluck('course_id');
+        $now = now();
+
+        $baseQuery = ZoomMeeting::whereIn('course_id', $enrolledCourseIds);
+
+        $upcomingCount = (clone $baseQuery)
+            ->where('start_time', '>', $now)
+            ->whereNull('ended_at')
+            ->count();
+
+        $ongoingCount = (clone $baseQuery)
+            ->where('start_time', '<=', $now)
+            ->whereNull('ended_at')
+            ->whereRaw('DATE_ADD(start_time, INTERVAL duration MINUTE) >= ?', [$now])
+            ->count();
 
         $query = ZoomMeeting::with(['course', 'attendances' => function ($q) use ($user) {
             $q->where('user_id', $user->id);
         }])
         ->whereIn('course_id', $enrolledCourseIds);
 
-        // Filter by status
         if ($request->filled('status')) {
-            $now = now();
-            
             if ($request->status === 'upcoming') {
-                $query->where('start_time', '>', $now);
+                $query->where('start_time', '>', $now)
+                    ->whereNull('ended_at');
             } elseif ($request->status === 'ongoing') {
                 $query->where('start_time', '<=', $now)
+                    ->whereNull('ended_at')
                     ->whereRaw('DATE_ADD(start_time, INTERVAL duration MINUTE) >= ?', [$now]);
             } elseif ($request->status === 'past') {
-                $query->whereRaw('DATE_ADD(start_time, INTERVAL duration MINUTE) < ?', [$now]);
+                $query->where(function ($q) use ($now) {
+                    $q->whereNotNull('ended_at')
+                        ->orWhereRaw('DATE_ADD(start_time, INTERVAL duration MINUTE) < ?', [$now]);
+                });
             }
         }
 
@@ -40,6 +55,10 @@ class TimetableController extends Controller
 
         return Inertia::render('user/timetable', [
             'meetings' => $meetings,
+            'counts' => [
+                'upcoming' => $upcomingCount,
+                'ongoing' => $ongoingCount,
+            ],
             'filters' => $request->only(['status']),
         ]);
     }

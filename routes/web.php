@@ -69,6 +69,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('meetings/create', [\App\Http\Controllers\Admin\MeetingController::class, 'create'])->name('meetings.create');
     Route::post('meetings', [\App\Http\Controllers\Admin\MeetingController::class, 'store'])->name('meetings.store');
     Route::delete('meetings/{meeting}', [\App\Http\Controllers\Admin\MeetingController::class, 'destroy'])->name('meetings.destroy');
+    
+    Route::get('attendances', [\App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendances.index');
 });
 
 require __DIR__.'/settings.php';

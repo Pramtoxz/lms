@@ -20,16 +20,25 @@ class MeetingController extends Controller
 
     public function index(Request $request)
     {
+        $now = now();
+
+        $upcomingCount = ZoomMeeting::where('start_time', '>', $now)
+            ->whereNull('ended_at')
+            ->count();
+
+        $ongoingCount = ZoomMeeting::where('start_time', '<=', $now)
+            ->whereNull('ended_at')
+            ->whereRaw('DATE_ADD(start_time, INTERVAL duration MINUTE) >= ?', [$now])
+            ->count();
+
         $query = ZoomMeeting::with('course');
 
-        // Search
         if ($request->filled('search')) {
             $query->whereHas('course', function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%");
             });
         }
 
-        // Filter by course
         if ($request->filled('course_id')) {
             $query->where('course_id', $request->course_id);
         }
@@ -40,6 +49,10 @@ class MeetingController extends Controller
         return Inertia::render('admin/meetings/index', [
             'meetings' => $meetings,
             'courses' => $courses,
+            'counts' => [
+                'upcoming' => $upcomingCount,
+                'ongoing' => $ongoingCount,
+            ],
             'filters' => $request->only(['search', 'course_id']),
         ]);
     }

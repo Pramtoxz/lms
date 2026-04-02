@@ -18,12 +18,14 @@ class ZoomMeeting extends Model
         'duration',
         'join_url',
         'start_url',
+        'ended_at',
     ];
 
     protected function casts(): array
     {
         return [
             'start_time' => 'datetime',
+            'ended_at' => 'datetime',
         ];
     }
 
