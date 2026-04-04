@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use ReCaptcha\ReCaptcha;
 
 class LoginRequest extends FormRequest
 {
@@ -31,10 +32,10 @@ class LoginRequest extends FormRequest
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
             'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $recaptcha = new \ReCaptcha\ReCaptcha(config('services.recaptcha.secret_key'));
+                $recaptcha = new ReCaptcha(config('services.recaptcha.secret_key'));
                 $resp = $recaptcha->verify($value, $this->ip());
-                
-                if (!$resp->isSuccess()) {
+
+                if (! $resp->isSuccess()) {
                     $fail('reCAPTCHA verification failed. Please try again.');
                 }
             }],

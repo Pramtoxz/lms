@@ -8,17 +8,18 @@ use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\User\CourseController as UserCourseController;
+use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\ExamController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\TimetableController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
     }
+
     return redirect()->route('login');
 })->name('home');
 
@@ -26,7 +27,7 @@ Route::get('/', function () {
 Route::match(['get', 'post'], 'payment/return/{order_id}', [PaymentController::class, 'handleReturn'])->name('payment.return');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Browse all published courses (catalog)
     Route::get('browse', [UserCourseController::class, 'browse'])->name('courses.browse');
@@ -57,8 +58,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    
+    Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
     Route::resource('courses', CourseController::class);
     Route::resource('courses.lessons', LessonController::class)->shallow();
     Route::resource('courses.questions', QuestionController::class)->shallow();
