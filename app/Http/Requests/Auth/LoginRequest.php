@@ -30,6 +30,14 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $recaptcha = new \ReCaptcha\ReCaptcha(config('services.recaptcha.secret_key'));
+                $resp = $recaptcha->verify($value, $this->ip());
+                
+                if (!$resp->isSuccess()) {
+                    $fail('reCAPTCHA verification failed. Please try again.');
+                }
+            }],
         ];
     }
 
