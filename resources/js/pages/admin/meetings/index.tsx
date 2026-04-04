@@ -46,17 +46,13 @@ interface Props {
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
     courses: Course[];
-    counts: {
-        upcoming: number;
-        ongoing: number;
-    };
     filters: {
         search?: string;
         course_id?: string;
     };
 }
 
-export default function Index({ meetings, courses, counts, filters }: Props) {
+export default function Index({ meetings, courses, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [courseId, setCourseId] = useState(filters.course_id || 'all');
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; meeting: Meeting | null }>({
