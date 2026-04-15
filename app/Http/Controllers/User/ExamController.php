@@ -9,6 +9,7 @@ use App\Models\ExamResult;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -19,7 +20,7 @@ class ExamController extends Controller
 {
     public function index(): Response
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $enrollments = Enrollment::with('course')
             ->where('user_id', $userId)
@@ -48,15 +49,24 @@ class ExamController extends Controller
         ]);
     }
 
-    public function show(Course $course): Response
+    public function show(Course $course): Response|\Illuminate\Http\RedirectResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $enrollment = Enrollment::where('user_id', $userId)
             ->where('course_id', $course->id)
             ->firstOrFail();
 
-        // Development Mode: Skip progress check
+        $passedResult = ExamResult::where('user_id', $userId)
+            ->where('course_id', $course->id)
+            ->where('is_passed', true)
+            ->first();
+
+        if ($passedResult) {
+            return redirect()->route('courses.exam.result', [$course->id, $passedResult->id])
+                ->with('info', 'You have already passed this exam.');
+        }
+
         $devMode = config('app.dev_mode', false);
 
         if (! $devMode && $enrollment->progress_percentage < 100) {
@@ -110,11 +120,21 @@ class ExamController extends Controller
 
     public function submit(Request $request, Course $course)
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $enrollment = Enrollment::where('user_id', $userId)
             ->where('course_id', $course->id)
             ->firstOrFail();
+
+        $passedResult = ExamResult::where('user_id', $userId)
+            ->where('course_id', $course->id)
+            ->where('is_passed', true)
+            ->first();
+
+        if ($passedResult) {
+            return redirect()->route('courses.exam.result', [$course->id, $passedResult->id])
+                ->withErrors(['error' => 'You have already passed this exam.']);
+        }
 
         if ($enrollment->progress_percentage < 100) {
             return back()->withErrors(['error' => 'You must complete all lessons first.']);
@@ -150,7 +170,7 @@ class ExamController extends Controller
 
         $certificatePath = null;
         if ($isPassed) {
-            $user = auth()->user();
+            $user = Auth::user();
             $certificatePath = $this->generateCertificate($course, $user, $score);
         }
 
@@ -163,13 +183,17 @@ class ExamController extends Controller
             'attempt' => $attemptCount + 1,
         ]);
 
+        if ($isPassed) {
+            event(new \App\Events\CourseCompleted($enrollment));
+        }
+
         return redirect()->route('courses.exam.result', [$course->id, $examResult->id])
             ->with('success', $isPassed ? 'Congratulations! You passed the exam.' : 'You did not pass. Please try again.');
     }
 
     public function result(Course $course, ExamResult $examResult): Response
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         if ($examResult->user_id !== $userId) {
             abort(403);
@@ -183,14 +207,14 @@ class ExamController extends Controller
 
     public function downloadCertificate(Course $course, ExamResult $examResult)
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         if ($examResult->user_id !== $userId || ! $examResult->is_passed) {
             abort(403);
         }
 
         if (! $examResult->certificate_path || ! Storage::disk('public')->exists($examResult->certificate_path)) {
-            $user = auth()->user();
+            $user = Auth::user();
             $examResult->certificate_path = $this->generateCertificate($course, $user, $examResult->score);
             $examResult->save();
         }
@@ -201,14 +225,12 @@ class ExamController extends Controller
         return response()->download($storagePath, 'sertifikat-'.$course->id.'.'.$extension);
     }
 
-    private function generateCertificate(Course $course, $user, $score): string
+    private function generateCertificate(Course $course, User $user, float $score): string
     {
-        // Jika course punya custom template, gunakan image overlay
         if ($course->certificate_template && Storage::disk('public')->exists($course->certificate_template)) {
             return $this->generateCertificateWithTemplate($course, $user, $score);
         }
 
-        // Fallback ke PDF template
         $data = [
             'user' => $user,
             'course' => $course,
@@ -225,28 +247,19 @@ class ExamController extends Controller
         return $filename;
     }
 
-    /**
-     * Generate certificate with custom template
-     *
-     * @param  User  $user
-     * @param  float  $score
-     */
-    private function generateCertificateWithTemplate(Course $course, $user, $score): string
+    private function generateCertificateWithTemplate(Course $course, User $user, float $score): string
     {
         $templatePath = Storage::disk('public')->path($course->certificate_template);
         $coords = config('certificate.coordinates');
 
-        // Get font path dari course atau gunakan default
         $availableFonts = config('certificate.available_fonts');
         $defaultFont = config('certificate.default_font');
         $fontKey = $course->certificate_font ?? $defaultFont;
         $fontPath = $availableFonts[$fontKey]['path'] ?? config('certificate.font_path');
 
-        // Load template image menggunakan GD driver
         $manager = new ImageManager(new Driver);
         $image = $manager->read($templatePath);
 
-        // Overlay text dengan koordinat fixed
         $image->text($user->name, $coords['name']['x'], $coords['name']['y'], function ($font) use ($coords, $fontPath) {
             $font->file($fontPath);
             $font->size($coords['name']['font_size']);
@@ -271,7 +284,6 @@ class ExamController extends Controller
             $font->valign('middle');
         });
 
-        // Save as PNG
         $filename = 'certificates/'.$user->id.'-'.$course->id.'-'.time().'.png';
         Storage::disk('public')->put($filename, $image->toPng());
 

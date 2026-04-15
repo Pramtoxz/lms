@@ -18,10 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            \Binafy\LaravelUserMonitoring\Middlewares\VisitMonitoringMiddleware::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
             'payment/return/*',
+            'api/zoom/webhook',
         ]);
 
         $middleware->alias([

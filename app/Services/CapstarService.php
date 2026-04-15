@@ -46,4 +46,43 @@ class CapstarService
             return null;
         }
     }
+
+    public function syncCourseCompletion(string $nirc, int $courseNumber): bool
+    {
+        try {
+            $response = Http::withHeaders([
+                'x-secret-key' => $this->secretKey,
+                'Accept' => 'application/json',
+            ])->post("{$this->apiUrl}/update-course", [
+                'nirc' => $nirc,
+                'course_number' => $courseNumber,
+                'completed_at' => now()->toDateTimeString(),
+            ]);
+
+            if ($response->successful()) {
+                Log::info('Capstar course completion synced', [
+                    'nirc' => $nirc,
+                    'course_number' => $courseNumber,
+                ]);
+                return true;
+            }
+
+            Log::warning('Capstar sync failed', [
+                'nirc' => $nirc,
+                'course_number' => $courseNumber,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('Capstar sync error', [
+                'nirc' => $nirc,
+                'course_number' => $courseNumber,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\CourseCompleted;
+use App\Listeners\SyncToCapstar;
 use App\Models\ZoomMeeting;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
@@ -22,6 +25,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(
+            CourseCompleted::class,
+            SyncToCapstar::class,
+        );
+
         Inertia::share([
             'meetingCounts' => function () {
                 if (! Auth::check()) {

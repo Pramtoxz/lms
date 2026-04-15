@@ -20,6 +20,8 @@ export default function Create({ availableFonts }: { availableFonts: Record<stri
         certificate_font: string;
         exam_duration: number;
         is_published: boolean;
+        sync_to_capstar: boolean;
+        capstar_course_number: string;
     }>({
         title: '',
         description: '',
@@ -30,6 +32,8 @@ export default function Create({ availableFonts }: { availableFonts: Record<stri
         certificate_font: 'dejavu',
         exam_duration: 30,
         is_published: false,
+        sync_to_capstar: false,
+        capstar_course_number: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -190,6 +194,52 @@ export default function Create({ availableFonts }: { availableFonts: Record<stri
                                 <Label htmlFor="is_published" className="cursor-pointer">
                                     Publish this course
                                 </Label>
+                            </div>
+
+                            <div className="space-y-4 rounded-lg border p-4">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="sync_to_capstar"
+                                        checked={data.sync_to_capstar}
+                                        onCheckedChange={(checked) => {
+                                            const isChecked: boolean = checked === true;
+                                            setData('sync_to_capstar', isChecked);
+                                            if (!isChecked) {
+                                                setData('capstar_course_number', '');
+                                            }
+                                        }}
+                                    />
+                                    <Label htmlFor="sync_to_capstar" className="cursor-pointer">
+                                        Sync to Capstar
+                                    </Label>
+                                </div>
+
+                                {data.sync_to_capstar && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="capstar_course_number">Capstar Course Number</Label>
+                                        <Select
+                                            value={data.capstar_course_number}
+                                            onValueChange={(value) => setData('capstar_course_number', value)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select course number (1-5)" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1">Course 1</SelectItem>
+                                                <SelectItem value="2">Course 2</SelectItem>
+                                                <SelectItem value="3">Course 3</SelectItem>
+                                                <SelectItem value="4">Course 4</SelectItem>
+                                                <SelectItem value="5">Course 5</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-muted-foreground text-xs">
+                                            Map this course to Capstar course number (1-5). Completion will be synced automatically.
+                                        </p>
+                                        {errors.capstar_course_number && (
+                                            <p className="text-destructive text-sm">{errors.capstar_course_number}</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">

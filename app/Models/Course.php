@@ -21,6 +21,7 @@ class Course extends Model
         'certificate_font',
         'exam_duration',
         'is_published',
+        'capstar_course_number',
     ];
 
     protected function casts(): array

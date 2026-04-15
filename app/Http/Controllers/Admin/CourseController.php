@@ -59,6 +59,7 @@ class CourseController extends Controller
             'certificate_font' => 'nullable|string',
             'exam_duration' => 'required|integer|min:5|max:180',
             'is_published' => 'boolean',
+            'capstar_course_number' => 'nullable|integer|between:1,5',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -97,6 +98,7 @@ class CourseController extends Controller
             'certificate_font' => 'nullable|string',
             'exam_duration' => 'required|integer|min:5|max:180',
             'is_published' => 'boolean',
+            'capstar_course_number' => 'nullable|integer|between:1,5',
         ]);
 
         if ($request->hasFile('thumbnail')) {

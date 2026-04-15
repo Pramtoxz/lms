@@ -28,6 +28,7 @@ interface Enrollment {
     enrolled_at: string;
     course: Course;
     first_lesson_id: number | null;
+    passed_exam: boolean;
 }
 
 interface PaginationLink {
@@ -171,21 +172,37 @@ export default function Index({ enrollments, filters }: { enrollments: Paginated
                                     </div>
 
                                     {enrollment.progress_percentage >= 100 ? (
-                                        <div className="flex gap-2">
-                                            <Link href={route('courses.exam', enrollment.course.id)} className="flex-1">
-                                                <Button className="w-full" variant="default">
-                                                    <FileCheck className="mr-2 h-4 w-4" />
-                                                    Take Exam
+                                        enrollment.passed_exam ? (
+                                            <div className="flex gap-2">
+                                                <Button className="w-full" variant="outline" disabled>
+                                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                    Exam Passed
                                                 </Button>
-                                            </Link>
-                                            {enrollment.first_lesson_id && (
-                                                <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
-                                                    <Button variant="outline" size="icon">
-                                                        <Play className="h-4 w-4" />
+                                                {enrollment.first_lesson_id && (
+                                                    <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
+                                                        <Button variant="outline" size="icon">
+                                                            <Play className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                <Link href={route('courses.exam', enrollment.course.id)} className="flex-1">
+                                                    <Button className="w-full" variant="default">
+                                                        <FileCheck className="mr-2 h-4 w-4" />
+                                                        Take Exam
                                                     </Button>
                                                 </Link>
-                                            )}
-                                        </div>
+                                                {enrollment.first_lesson_id && (
+                                                    <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
+                                                        <Button variant="outline" size="icon">
+                                                            <Play className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        )
                                     ) : enrollment.first_lesson_id ? (
                                         <Link href={route('courses.player', [enrollment.course.id, enrollment.first_lesson_id])}>
                                             <Button className="w-full">
