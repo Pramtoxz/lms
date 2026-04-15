@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, BookOpen, CheckCircle2, CreditCard, Lock, Shield, Clock } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, Clock, CreditCard, Lock, Shield } from 'lucide-react';
 import { useState } from 'react';
 
 interface Course {
@@ -39,9 +39,9 @@ export default function Checkout({ course, user }: { course: Course; user: User 
         <AppLayout>
             <Head title={`Checkout - ${course.title}`} />
 
-            <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+            <div className="from-background to-muted/20 min-h-screen bg-gradient-to-b">
                 {/* Header - Mobile Optimized */}
-                <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b backdrop-blur">
                     <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-center gap-2 sm:gap-4">
@@ -79,15 +79,17 @@ export default function Checkout({ course, user }: { course: Course; user: User 
                                         {course.thumbnail ? (
                                             <img src={`/storage/${course.thumbnail}`} alt={course.title} className="h-full w-full object-cover" />
                                         ) : (
-                                            <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                                            <div className="from-primary/20 to-primary/5 flex h-full items-center justify-center bg-gradient-to-br">
                                                 <BookOpen className="text-primary/40 h-12 w-12 sm:h-16 sm:w-16" />
                                             </div>
                                         )}
                                     </div>
 
                                     <div>
-                                        <h3 className="text-sm font-semibold leading-tight sm:text-base">{course.title}</h3>
-                                        <p className="text-muted-foreground mt-1.5 line-clamp-2 text-xs sm:mt-2 sm:line-clamp-3 sm:text-sm">{course.description}</p>
+                                        <h3 className="text-sm leading-tight font-semibold sm:text-base">{course.title}</h3>
+                                        <p className="text-muted-foreground mt-1.5 line-clamp-2 text-xs sm:mt-2 sm:line-clamp-3 sm:text-sm">
+                                            {course.description}
+                                        </p>
                                     </div>
 
                                     <Separator />
@@ -104,7 +106,9 @@ export default function Checkout({ course, user }: { course: Course; user: User 
                                         <Separator />
                                         <div className="flex items-center justify-between">
                                             <span className="text-base font-semibold sm:text-lg">Total</span>
-                                            <span className="text-xl font-bold text-primary sm:text-2xl">RM {parseFloat(course.price).toFixed(2)}</span>
+                                            <span className="text-primary text-xl font-bold sm:text-2xl">
+                                                RM {parseFloat(course.price).toFixed(2)}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -149,11 +153,15 @@ export default function Checkout({ course, user }: { course: Course; user: User 
                                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                                         <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4">
                                             <div className="space-y-1.5 sm:space-y-2">
-                                                <Label htmlFor="name" className="text-xs sm:text-sm">Full Name</Label>
+                                                <Label htmlFor="name" className="text-xs sm:text-sm">
+                                                    Full Name
+                                                </Label>
                                                 <Input id="name" type="text" value={user.name} readOnly className="bg-muted text-sm" />
                                             </div>
                                             <div className="space-y-1.5 sm:space-y-2">
-                                                <Label htmlFor="email" className="text-xs sm:text-sm">Email Address</Label>
+                                                <Label htmlFor="email" className="text-xs sm:text-sm">
+                                                    Email Address
+                                                </Label>
                                                 <Input id="email" type="email" value={user.email} readOnly className="bg-muted text-sm" />
                                             </div>
                                         </div>
@@ -161,7 +169,7 @@ export default function Checkout({ course, user }: { course: Course; user: User 
                                         <Separator />
 
                                         <div className="space-y-3 sm:space-y-4">
-                                            <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 sm:gap-3 sm:p-4">
+                                            <div className="border-primary/20 bg-primary/5 flex items-start gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4">
                                                 <Shield className="text-primary mt-0.5 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
                                                 <div className="space-y-0.5 sm:space-y-1">
                                                     <p className="text-xs font-medium sm:text-sm">Secure Payment Gateway</p>
@@ -200,27 +208,41 @@ export default function Checkout({ course, user }: { course: Course; user: User 
                                                     className="mt-0.5 sm:mt-1"
                                                 />
                                                 <div className="space-y-0.5 sm:space-y-1">
-                                                    <Label htmlFor="terms" className="cursor-pointer text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sm:text-sm">
+                                                    <Label
+                                                        htmlFor="terms"
+                                                        className="cursor-pointer text-xs leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sm:text-sm"
+                                                    >
                                                         I agree to the Terms and Conditions
                                                     </Label>
                                                     <p className="text-muted-foreground text-[10px] leading-relaxed sm:text-xs">
                                                         By checking this box, you agree to the{' '}
-                                                        <a href="#" className="text-primary hover:underline">Terms</a> and{' '}
-                                                        <a href="#" className="text-primary hover:underline">Privacy Policy</a>. Immediate access upon payment.
+                                                        <a href="#" className="text-primary hover:underline">
+                                                            Terms
+                                                        </a>{' '}
+                                                        and{' '}
+                                                        <a href="#" className="text-primary hover:underline">
+                                                            Privacy Policy
+                                                        </a>
+                                                        . Immediate access upon payment.
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {!agreedToTerms && (
-                                                <div className="bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900 rounded-lg border p-2.5 sm:p-3">
-                                                    <p className="text-amber-800 dark:text-amber-200 text-[10px] sm:text-xs">
+                                                <div className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 sm:p-3 dark:border-amber-900 dark:bg-amber-950/20">
+                                                    <p className="text-[10px] text-amber-800 sm:text-xs dark:text-amber-200">
                                                         Please agree to the Terms and Conditions to proceed.
                                                     </p>
                                                 </div>
                                             )}
                                         </div>
 
-                                        <Button type="submit" className="w-full gap-2 text-sm sm:text-base" size="lg" disabled={processing || !agreedToTerms}>
+                                        <Button
+                                            type="submit"
+                                            className="w-full gap-2 text-sm sm:text-base"
+                                            size="lg"
+                                            disabled={processing || !agreedToTerms}
+                                        >
                                             {processing ? (
                                                 <>
                                                     <Clock className="h-4 w-4 animate-spin sm:h-5 sm:w-5" />

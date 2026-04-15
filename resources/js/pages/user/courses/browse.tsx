@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, CheckCircle2, Search, ShoppingCart, Filter, X, GraduationCap, Sparkles, TrendingUp } from 'lucide-react';
+import { BookOpen, CheckCircle2, Filter, GraduationCap, Search, ShoppingCart, Sparkles, TrendingUp, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { cn } from '@/lib/utils';
 
 interface Course {
     id: number;
@@ -49,7 +49,7 @@ export default function Browse({
                 preserveState: true,
                 replace: true,
                 onFinish: () => setIsSearching(false),
-            }
+            },
         );
     }, 500);
 
@@ -79,18 +79,18 @@ export default function Browse({
         <AppLayout>
             <Head title="Browse Courses" />
 
-            <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+            <div className="from-background to-muted/20 min-h-screen bg-gradient-to-b">
                 {/* Hero Section with Search */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-                    <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
+                <div className="from-primary/10 via-primary/5 to-background relative overflow-hidden bg-gradient-to-br">
+                    <div className="bg-grid-white/10 absolute inset-0 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
                     <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                         <div className="text-center">
-                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+                            <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
                                 <Sparkles className="h-4 w-4" />
                                 <span>Discover Your Next Skill</span>
                             </div>
                             <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                                Browse <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Courses</span>
+                                Browse <span className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-transparent">Courses</span>
                             </h1>
                             <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg">
                                 Explore our collection of courses and start your learning journey today
@@ -105,7 +105,7 @@ export default function Browse({
                                         placeholder="Search for courses, topics, or skills..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="h-14 rounded-full border-2 pl-12 pr-12 text-lg shadow-lg transition-all focus:border-primary focus:shadow-xl"
+                                        className="focus:border-primary h-14 rounded-full border-2 pr-12 pl-12 text-lg shadow-lg transition-all focus:shadow-xl"
                                     />
                                     {search && (
                                         <button
@@ -122,13 +122,13 @@ export default function Browse({
                                     <div className="flex items-center gap-2">
                                         <GraduationCap className="text-primary h-5 w-5" />
                                         <span className="text-muted-foreground">
-                                            <span className="font-semibold text-foreground">{courses.total}</span> Courses Available
+                                            <span className="text-foreground font-semibold">{courses.total}</span> Courses Available
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <TrendingUp className="text-primary h-5 w-5" />
                                         <span className="text-muted-foreground">
-                                            <span className="font-semibold text-foreground">{enrolledCourseIds.length}</span> Enrolled
+                                            <span className="text-foreground font-semibold">{enrolledCourseIds.length}</span> Enrolled
                                         </span>
                                     </div>
                                 </div>
@@ -179,7 +179,7 @@ export default function Browse({
 
                     {/* Results Info */}
                     {(search || type !== 'all') && (
-                        <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+                        <div className="bg-card flex items-center justify-between rounded-lg border p-4">
                             <p className="text-sm">
                                 Found <span className="font-semibold">{courses.total}</span> course{courses.total !== 1 ? 's' : ''}
                                 {search && (
@@ -232,8 +232,8 @@ export default function Browse({
                                 <Card
                                     key={course.id}
                                     className={cn(
-                                        'group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1',
-                                        isEnrolled(course.id) && 'ring-2 ring-primary/20'
+                                        'group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
+                                        isEnrolled(course.id) && 'ring-primary/20 ring-2',
                                     )}
                                 >
                                     {/* Thumbnail - Clickable */}
@@ -246,7 +246,7 @@ export default function Browse({
                                                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                 />
                                             ) : (
-                                                <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                                                <div className="from-primary/20 to-primary/5 flex h-full items-center justify-center bg-gradient-to-br">
                                                     <BookOpen className="text-primary/40 h-16 w-16" />
                                                 </div>
                                             )}
@@ -254,7 +254,7 @@ export default function Browse({
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/40">
                                                 <div className="translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                                                     <div className="rounded-full bg-white p-3 shadow-lg">
-                                                        <Search className="h-6 w-6 text-primary" />
+                                                        <Search className="text-primary h-6 w-6" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -282,7 +282,7 @@ export default function Browse({
 
                                     <CardHeader className="flex-1">
                                         <Link href={route('courses.show', course.id)}>
-                                            <CardTitle className="line-clamp-2 cursor-pointer text-lg transition-colors group-hover:text-primary">
+                                            <CardTitle className="group-hover:text-primary line-clamp-2 cursor-pointer text-lg transition-colors">
                                                 {course.title}
                                             </CardTitle>
                                         </Link>
@@ -336,7 +336,7 @@ export default function Browse({
                                     router.get(
                                         route('courses.browse'),
                                         { search, type: type !== 'all' ? type : undefined, page: courses.current_page - 1 },
-                                        { preserveState: true }
+                                        { preserveState: true },
                                     )
                                 }
                             >
@@ -358,7 +358,7 @@ export default function Browse({
                                                 router.get(
                                                     route('courses.browse'),
                                                     { search, type: type !== 'all' ? type : undefined, page },
-                                                    { preserveState: true }
+                                                    { preserveState: true },
                                                 )
                                             }
                                         >
@@ -378,7 +378,7 @@ export default function Browse({
                                     router.get(
                                         route('courses.browse'),
                                         { search, type: type !== 'all' ? type : undefined, page: courses.current_page + 1 },
-                                        { preserveState: true }
+                                        { preserveState: true },
                                     )
                                 }
                             >

@@ -1,10 +1,3 @@
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,6 +8,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, Clock, Plus, Search, Trash2, Video } from 'lucide-react';
 import { useState } from 'react';
@@ -64,7 +64,7 @@ export default function Index({ meetings, courses, filters }: Props) {
         router.get(
             route('admin.meetings.index'),
             { search: value, course_id: courseId !== 'all' ? courseId : undefined },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true },
         );
     }, 500);
 
@@ -75,11 +75,7 @@ export default function Index({ meetings, courses, filters }: Props) {
 
     const handleCourseFilter = (value: string) => {
         setCourseId(value);
-        router.get(
-            route('admin.meetings.index'),
-            { search, course_id: value !== 'all' ? value : undefined },
-            { preserveState: true, replace: true }
-        );
+        router.get(route('admin.meetings.index'), { search, course_id: value !== 'all' ? value : undefined }, { preserveState: true, replace: true });
     };
 
     const handleDelete = (meeting: Meeting) => {
@@ -95,7 +91,7 @@ export default function Index({ meetings, courses, filters }: Props) {
 
     const getStatus = (startTime: string, duration: number, endedAt: string | null) => {
         if (endedAt) return { label: 'Past', variant: 'outline' as const };
-        
+
         const now = new Date();
         const start = new Date(startTime);
         const end = new Date(start.getTime() + duration * 60000);
@@ -121,7 +117,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold sm:text-3xl">Zoom Meetings</h1>
-                        <p className="text-sm text-muted-foreground sm:text-base">Manage live class meetings</p>
+                        <p className="text-muted-foreground text-sm sm:text-base">Manage live class meetings</p>
                     </div>
                     <Button asChild size="sm" className="w-full sm:w-auto">
                         <Link href={route('admin.meetings.create')}>
@@ -139,7 +135,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                     <CardContent className="space-y-3">
                         <div className="flex flex-col gap-3 sm:flex-row">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                 <Input
                                     placeholder="Search by course name..."
                                     value={search}
@@ -180,7 +176,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                         <TableBody>
                             {meetings.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                    <TableCell colSpan={6} className="text-muted-foreground text-center">
                                         No meetings found
                                     </TableCell>
                                 </TableRow>
@@ -199,22 +195,14 @@ export default function Index({ meetings, courses, filters }: Props) {
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
                                                     {status.label !== 'Past' && (
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            asChild
-                                                        >
+                                                        <Button variant="outline" size="sm" asChild>
                                                             <a href={meeting.start_url} target="_blank" rel="noopener noreferrer">
                                                                 <Video className="h-4 w-4" />
                                                                 Start
                                                             </a>
                                                         </Button>
                                                     )}
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="sm"
-                                                        onClick={() => handleDelete(meeting)}
-                                                    >
+                                                    <Button variant="destructive" size="sm" onClick={() => handleDelete(meeting)}>
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -231,9 +219,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                 <div className="space-y-3 md:hidden">
                     {meetings.data.length === 0 ? (
                         <Card>
-                            <CardContent className="py-8 text-center text-muted-foreground">
-                                No meetings found
-                            </CardContent>
+                            <CardContent className="text-muted-foreground py-8 text-center">No meetings found</CardContent>
                         </Card>
                     ) : (
                         meetings.data.map((meeting) => {
@@ -250,11 +236,11 @@ export default function Index({ meetings, courses, filters }: Props) {
                                     </CardHeader>
                                     <CardContent className="space-y-3">
                                         <div className="space-y-2 text-sm">
-                                            <div className="flex items-center gap-2 text-muted-foreground">
+                                            <div className="text-muted-foreground flex items-center gap-2">
                                                 <Calendar className="h-4 w-4" />
                                                 {formatDateTime(meeting.start_time)}
                                             </div>
-                                            <div className="flex items-center gap-2 text-muted-foreground">
+                                            <div className="text-muted-foreground flex items-center gap-2">
                                                 <Clock className="h-4 w-4" />
                                                 {meeting.duration} minutes
                                             </div>
@@ -268,11 +254,7 @@ export default function Index({ meetings, courses, filters }: Props) {
                                                     </a>
                                                 </Button>
                                             )}
-                                            <Button
-                                                variant="destructive"
-                                                size="sm"
-                                                onClick={() => handleDelete(meeting)}
-                                            >
+                                            <Button variant="destructive" size="sm" onClick={() => handleDelete(meeting)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -286,30 +268,24 @@ export default function Index({ meetings, courses, filters }: Props) {
                 {/* Pagination */}
                 {meetings.last_page > 1 && (
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             Showing {meetings.data.length} of {meetings.total} meetings
                         </p>
                         <div className="flex gap-2">
                             {meetings.links.map((link, index) => {
                                 if (!link.url) return null;
-                                
+
                                 const isActive = link.active;
                                 const label = link.label.replace('&laquo;', '').replace('&raquo;', '').trim();
-                                
+
                                 if (label === 'Previous' || label === 'Next') {
                                     return (
-                                        <Button
-                                            key={index}
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => router.get(link.url!)}
-                                            disabled={!link.url}
-                                        >
+                                        <Button key={index} variant="outline" size="sm" onClick={() => router.get(link.url!)} disabled={!link.url}>
                                             {label}
                                         </Button>
                                     );
                                 }
-                                
+
                                 return (
                                     <Button
                                         key={index}

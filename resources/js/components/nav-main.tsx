@@ -14,7 +14,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
             <SidebarMenu>
                 {items.map((item) => {
                     const showBadge = (item.url === '/timetable' || item.url === '/admin/meetings') && totalMeetings > 0;
-                    
+
                     return (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton asChild isActive={item.url === page.url}>

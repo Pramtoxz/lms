@@ -1,19 +1,10 @@
-import AppLayout from '@/layouts/app-layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
-import { 
-    BookOpen, 
-    Calendar, 
-    TrendingUp, 
-    Clock,
-    CheckCircle2,
-    Video,
-    Award,
-    ArrowRight
-} from 'lucide-react';
+import { ArrowRight, Award, BookOpen, Calendar, CheckCircle2, Clock, TrendingUp, Video } from 'lucide-react';
 
 interface Stats {
     enrolled_courses: number;
@@ -81,15 +72,13 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
     return (
         <>
             <Head title="Dashboard" />
-            
+
             <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold sm:text-3xl">Dashboard</h1>
-                        <p className="text-sm text-muted-foreground sm:text-base">
-                            Track your learning progress
-                        </p>
+                        <p className="text-muted-foreground text-sm sm:text-base">Track your learning progress</p>
                     </div>
                     <Button asChild>
                         <Link href="/browse">
@@ -100,9 +89,9 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
                     <Card className="overflow-hidden">
-                        <div className="absolute right-0 top-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-blue-500/10" />
+                        <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-blue-500/10" />
                         <CardHeader className="relative pb-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
@@ -113,12 +102,12 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm font-medium">Enrolled Courses</p>
-                            <p className="text-xs text-muted-foreground">Active learning</p>
+                            <p className="text-muted-foreground text-xs">Active learning</p>
                         </CardContent>
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <div className="absolute right-0 top-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-green-500/10" />
+                        <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-green-500/10" />
                         <CardHeader className="relative pb-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
@@ -129,12 +118,12 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm font-medium">Completed</p>
-                            <p className="text-xs text-muted-foreground">Courses finished</p>
+                            <p className="text-muted-foreground text-xs">Courses finished</p>
                         </CardContent>
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <div className="absolute right-0 top-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-purple-500/10" />
+                        <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-purple-500/10" />
                         <CardHeader className="relative pb-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
@@ -145,12 +134,12 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm font-medium">Passed Exams</p>
-                            <p className="text-xs text-muted-foreground">Certificates earned</p>
+                            <p className="text-muted-foreground text-xs">Certificates earned</p>
                         </CardContent>
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <div className="absolute right-0 top-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-orange-500/10" />
+                        <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-orange-500/10" />
                         <CardHeader className="relative pb-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
@@ -161,7 +150,7 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm font-medium">Upcoming Meetings</p>
-                            <p className="text-xs text-muted-foreground">Live classes</p>
+                            <p className="text-muted-foreground text-xs">Live classes</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -173,8 +162,8 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                                        <TrendingUp className="h-4 w-4 text-primary" />
+                                    <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+                                        <TrendingUp className="text-primary h-4 w-4" />
                                     </div>
                                     <div>
                                         <CardTitle className="text-base sm:text-lg">Continue Learning</CardTitle>
@@ -192,12 +181,8 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                         <CardContent className="space-y-3">
                             {inProgressCourses && inProgressCourses.length > 0 ? (
                                 inProgressCourses.map((course) => (
-                                    <Link
-                                        key={course.id}
-                                        href={`/courses/${course.id}/lessons/${course.id}`}
-                                        className="group block"
-                                    >
-                                        <div className="flex gap-3 rounded-lg border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-md sm:gap-4">
+                                    <Link key={course.id} href={`/courses/${course.id}/lessons/${course.id}`} className="group block">
+                                        <div className="bg-card hover:border-primary/50 flex gap-3 rounded-lg border p-3 transition-all hover:shadow-md sm:gap-4">
                                             {course.thumbnail ? (
                                                 <img
                                                     src={`/storage/${course.thumbnail}`}
@@ -205,23 +190,21 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                                                     className="h-14 w-14 rounded-lg object-cover sm:h-16 sm:w-16"
                                                 />
                                             ) : (
-                                                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-muted sm:h-16 sm:w-16">
-                                                    <BookOpen className="h-5 w-5 text-muted-foreground sm:h-6 sm:w-6" />
+                                                <div className="bg-muted flex h-14 w-14 items-center justify-center rounded-lg sm:h-16 sm:w-16">
+                                                    <BookOpen className="text-muted-foreground h-5 w-5 sm:h-6 sm:w-6" />
                                                 </div>
                                             )}
                                             <div className="flex-1 space-y-2">
                                                 <div>
-                                                    <h4 className="font-medium leading-tight group-hover:text-primary sm:text-base">
+                                                    <h4 className="group-hover:text-primary leading-tight font-medium sm:text-base">
                                                         {course.title}
                                                     </h4>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {course.total_lessons} lessons
-                                                    </p>
+                                                    <p className="text-muted-foreground text-xs">{course.total_lessons} lessons</p>
                                                 </div>
                                                 <div className="space-y-1">
                                                     <div className="flex items-center justify-between text-xs">
                                                         <span className="text-muted-foreground">Progress</span>
-                                                        <span className="font-semibold text-primary">{course.progress}%</span>
+                                                        <span className="text-primary font-semibold">{course.progress}%</span>
                                                     </div>
                                                     <Progress value={course.progress} className="h-1.5" />
                                                 </div>
@@ -231,11 +214,11 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                                 ))
                             ) : (
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                                        <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                    <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
+                                        <BookOpen className="text-muted-foreground h-6 w-6" />
                                     </div>
                                     <p className="mt-3 text-sm font-medium">No courses in progress</p>
-                                    <p className="mt-1 text-xs text-muted-foreground">Start learning something new today</p>
+                                    <p className="text-muted-foreground mt-1 text-xs">Start learning something new today</p>
                                     <Button variant="outline" size="sm" asChild className="mt-4">
                                         <Link href="/browse">Browse Courses</Link>
                                     </Button>
@@ -263,22 +246,22 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                                     {upcomingMeetings.map((meeting) => (
                                         <div
                                             key={meeting.id}
-                                            className="group rounded-lg border bg-card p-3 transition-all hover:border-orange-500/50 hover:shadow-md"
+                                            className="group bg-card rounded-lg border p-3 transition-all hover:border-orange-500/50 hover:shadow-md"
                                         >
                                             <div className="flex items-start gap-3">
                                                 <div className="flex h-11 w-11 flex-col items-center justify-center rounded-lg bg-orange-100 text-orange-600">
                                                     <span className="text-[10px] font-medium uppercase">
                                                         {formatDate(meeting.start_time).split(' ')[0]}
                                                     </span>
-                                                    <span className="text-base font-bold leading-none">
+                                                    <span className="text-base leading-none font-bold">
                                                         {formatDate(meeting.start_time).split(' ')[1]}
                                                     </span>
                                                 </div>
                                                 <div className="flex-1 space-y-1">
-                                                    <h4 className="text-sm font-medium leading-tight group-hover:text-orange-600">
+                                                    <h4 className="text-sm leading-tight font-medium group-hover:text-orange-600">
                                                         {meeting.course.title}
                                                     </h4>
-                                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                    <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                                                         <Clock className="h-3 w-3" />
                                                         {formatTime(meeting.start_time)} · {meeting.duration} min
                                                     </div>
@@ -295,10 +278,10 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                                 </>
                             ) : (
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-8">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                        <Calendar className="h-5 w-5 text-muted-foreground" />
+                                    <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                                        <Calendar className="text-muted-foreground h-5 w-5" />
                                     </div>
-                                    <p className="mt-2 text-xs text-muted-foreground">No upcoming meetings</p>
+                                    <p className="text-muted-foreground mt-2 text-xs">No upcoming meetings</p>
                                 </div>
                             )}
                         </CardContent>
@@ -332,29 +315,22 @@ export default function Dashboard({ stats, inProgressCourses, upcomingMeetings, 
                                 {recentExams.map((exam) => (
                                     <div
                                         key={exam.id}
-                                        className="flex items-center gap-3 rounded-lg border bg-card p-3 transition-all hover:shadow-md"
+                                        className="bg-card flex items-center gap-3 rounded-lg border p-3 transition-all hover:shadow-md"
                                     >
                                         <div
                                             className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                                                exam.is_passed
-                                                    ? 'bg-green-100 text-green-600'
-                                                    : 'bg-red-100 text-red-600'
+                                                exam.is_passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                                             }`}
                                         >
                                             <span className="text-base font-bold">{exam.score}</span>
                                         </div>
                                         <div className="flex-1 space-y-1">
-                                            <h4 className="text-sm font-medium leading-tight">{exam.course.title}</h4>
+                                            <h4 className="text-sm leading-tight font-medium">{exam.course.title}</h4>
                                             <div className="flex items-center gap-2">
-                                                <Badge 
-                                                    variant={exam.is_passed ? 'default' : 'destructive'}
-                                                    className="text-xs"
-                                                >
+                                                <Badge variant={exam.is_passed ? 'default' : 'destructive'} className="text-xs">
                                                     {exam.is_passed ? 'Passed' : 'Failed'}
                                                 </Badge>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {formatDate(exam.created_at)}
-                                                </span>
+                                                <span className="text-muted-foreground text-xs">{formatDate(exam.created_at)}</span>
                                             </div>
                                         </div>
                                     </div>

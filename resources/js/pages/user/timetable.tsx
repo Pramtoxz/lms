@@ -1,10 +1,10 @@
-import AppLayout from '@/layouts/app-layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, Video, Lock } from 'lucide-react';
+import { Calendar, Lock, Video } from 'lucide-react';
 import { useState } from 'react';
 
 interface Course {
@@ -52,11 +52,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
 
     const handleTabChange = (value: string) => {
         setActiveTab(value);
-        router.get(
-            route('timetable.index'),
-            { status: value },
-            { preserveState: true, replace: true }
-        );
+        router.get(route('timetable.index'), { status: value }, { preserveState: true, replace: true });
     };
 
     const handleJoin = (meeting: Meeting) => {
@@ -65,7 +61,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
 
     const getStatus = (startTime: string, duration: number, endedAt: string | null) => {
         if (endedAt) return { label: 'Past', variant: 'outline' as const, canJoin: false };
-        
+
         const now = new Date();
         const start = new Date(startTime);
         const end = new Date(start.getTime() + duration * 60000);
@@ -106,9 +102,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                 {/* Header */}
                 <div>
                     <h1 className="text-2xl font-bold sm:text-3xl">Timetable</h1>
-                    <p className="text-sm text-muted-foreground sm:text-base">
-                        View and join your scheduled live class meetings
-                    </p>
+                    <p className="text-muted-foreground text-sm sm:text-base">View and join your scheduled live class meetings</p>
                 </div>
 
                 {/* Tabs */}
@@ -137,9 +131,9 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                         {meetings.data.length === 0 ? (
                             <Card>
                                 <CardContent className="py-12 text-center">
-                                    <Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <Calendar className="text-muted-foreground mx-auto h-12 w-12" />
                                     <h3 className="mt-4 text-lg font-semibold">No meetings found</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground">
+                                    <p className="text-muted-foreground mt-2 text-sm">
                                         {activeTab === 'upcoming' && 'You have no upcoming meetings scheduled.'}
                                         {activeTab === 'ongoing' && 'There are no ongoing meetings right now.'}
                                         {activeTab === 'past' && 'You have no past meetings.'}
@@ -157,12 +151,8 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                                         <CardHeader className="pb-3">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex-1 space-y-1">
-                                                    <CardTitle className="text-base sm:text-lg">
-                                                        {meeting.course.title}
-                                                    </CardTitle>
-                                                    <CardDescription className="text-xs sm:text-sm">
-                                                        Live Class Meeting
-                                                    </CardDescription>
+                                                    <CardTitle className="text-base sm:text-lg">{meeting.course.title}</CardTitle>
+                                                    <CardDescription className="text-xs sm:text-sm">Live Class Meeting</CardDescription>
                                                 </div>
                                                 <Badge variant={status.variant} className="shrink-0">
                                                     {status.label}
@@ -173,7 +163,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                                             {/* Meeting Info */}
                                             <div className="space-y-2 text-sm">
                                                 <div className="flex items-start gap-2">
-                                                    <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                                                    <Calendar className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
                                                     <div>
                                                         <p className="font-medium">{formatDate(meeting.start_time)}</p>
                                                         <p className="text-muted-foreground">
@@ -184,10 +174,8 @@ export default function Timetable({ meetings, counts, filters }: Props) {
 
                                                 {/* Attendance Info */}
                                                 {hasAttended && (
-                                                    <div className="rounded-lg border bg-muted/50 p-3">
-                                                        <p className="text-xs font-medium text-muted-foreground">
-                                                            Attendance
-                                                        </p>
+                                                    <div className="bg-muted/50 rounded-lg border p-3">
+                                                        <p className="text-muted-foreground text-xs font-medium">Attendance</p>
                                                         <div className="mt-2 space-y-1 text-xs">
                                                             {attendance.check_in_time && (
                                                                 <p>
@@ -208,11 +196,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
 
                                             {/* Action Button */}
                                             {status.canJoin ? (
-                                                <Button
-                                                    onClick={() => handleJoin(meeting)}
-                                                    className="w-full"
-                                                    size="lg"
-                                                >
+                                                <Button onClick={() => handleJoin(meeting)} className="w-full" size="lg">
                                                     <Video className="h-4 w-4" />
                                                     Join Meeting
                                                 </Button>
@@ -233,7 +217,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
                 {/* Pagination */}
                 {meetings.last_page > 1 && (
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             Showing {meetings.data.length} of {meetings.total} meetings
                         </p>
                         <div className="flex gap-2">
@@ -245,13 +229,7 @@ export default function Timetable({ meetings, counts, filters }: Props) {
 
                                 if (label === 'Previous' || label === 'Next') {
                                     return (
-                                        <Button
-                                            key={index}
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => router.get(link.url!)}
-                                            disabled={!link.url}
-                                        >
+                                        <Button key={index} variant="outline" size="sm" onClick={() => router.get(link.url!)} disabled={!link.url}>
                                             {label}
                                         </Button>
                                     );

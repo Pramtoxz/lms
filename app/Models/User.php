@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'capstar_member_id',
+        'nirc',
     ];
 
     protected $hidden = [
