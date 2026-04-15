@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, CheckCircle2, Clock, FileText, GraduationCap, PlayCircle, ShoppingCart, ArrowLeft, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Award, BookOpen, CheckCircle2, Clock, FileText, GraduationCap, PlayCircle, ShoppingCart } from 'lucide-react';
 
 interface Lesson {
     id: number;
@@ -52,10 +52,10 @@ export default function Show({ course, isEnrolled, enrollment }: { course: Cours
         <AppLayout>
             <Head title={course.title} />
 
-            <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+            <div className="from-background to-muted/20 min-h-screen bg-gradient-to-b">
                 {/* Hero Section */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-                    <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
+                <div className="from-primary/10 via-primary/5 to-background relative overflow-hidden bg-gradient-to-br">
+                    <div className="bg-grid-white/10 absolute inset-0 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
                     <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                         {/* Back Button */}
                         <Link href={route('courses.browse')}>
@@ -141,7 +141,7 @@ export default function Show({ course, isEnrolled, enrollment }: { course: Cours
                                         {course.thumbnail ? (
                                             <img src={`/storage/${course.thumbnail}`} alt={course.title} className="h-full w-full object-cover" />
                                         ) : (
-                                            <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                                            <div className="from-primary/20 to-primary/5 flex h-full items-center justify-center bg-gradient-to-br">
                                                 <BookOpen className="text-primary/40 h-20 w-20" />
                                             </div>
                                         )}
@@ -167,7 +167,10 @@ export default function Show({ course, isEnrolled, enrollment }: { course: Cours
                                                     <span className="font-semibold">{enrollment.progress_percentage}%</span>
                                                 </div>
                                                 <div className="bg-muted h-2 overflow-hidden rounded-full">
-                                                    <div className="bg-primary h-full transition-all duration-500" style={{ width: `${enrollment.progress_percentage}%` }} />
+                                                    <div
+                                                        className="bg-primary h-full transition-all duration-500"
+                                                        style={{ width: `${enrollment.progress_percentage}%` }}
+                                                    />
                                                 </div>
                                             </div>
                                         )}
@@ -264,7 +267,7 @@ export default function Show({ course, isEnrolled, enrollment }: { course: Cours
                                                     key={lesson.id}
                                                     className={cn(
                                                         'flex items-center justify-between rounded-lg border p-4 transition-colors',
-                                                        isEnrolled ? 'hover:bg-muted cursor-pointer' : 'opacity-75'
+                                                        isEnrolled ? 'hover:bg-muted cursor-pointer' : 'opacity-75',
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-4">
@@ -322,8 +325,8 @@ export default function Show({ course, isEnrolled, enrollment }: { course: Cours
                                     </div>
                                     <div className="bg-muted/50 rounded-lg p-4">
                                         <p className="text-sm">
-                                            <strong>Note:</strong> You must complete all lessons before taking the exam. You have 3 attempts to pass. Upon
-                                            passing, you'll receive a certificate of completion.
+                                            <strong>Note:</strong> You must complete all lessons before taking the exam. You have 3 attempts to pass.
+                                            Upon passing, you'll receive a certificate of completion.
                                         </p>
                                     </div>
                                 </CardContent>

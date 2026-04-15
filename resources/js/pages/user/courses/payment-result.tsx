@@ -19,15 +19,7 @@ interface Transaction {
     created_at: string;
 }
 
-export default function PaymentResult({
-    success,
-    course,
-}: {
-    success: boolean;
-    course: Course;
-    transaction: Transaction;
-    message?: string;
-}) {
+export default function PaymentResult({ success, course }: { success: boolean; course: Course; transaction: Transaction; message?: string }) {
     const lottieRef = useRef<LottieRefCurrentProps>(null);
 
     useEffect(() => {
@@ -43,19 +35,9 @@ export default function PaymentResult({
             <div className="flex min-h-screen flex-col items-center justify-center bg-white">
                 <div className="flex w-full flex-1 items-center justify-center">
                     {success ? (
-                        <Lottie
-                            lottieRef={lottieRef}
-                            animationData={paymentSuccessAnimation}
-                            loop={false}
-                            className="h-full w-full"
-                        />
+                        <Lottie lottieRef={lottieRef} animationData={paymentSuccessAnimation} loop={false} className="h-full w-full" />
                     ) : (
-                        <Lottie
-                            lottieRef={lottieRef}
-                            animationData={paymentFailedAnimation}
-                            loop={true}
-                            className="h-full w-full"
-                        />
+                        <Lottie lottieRef={lottieRef} animationData={paymentFailedAnimation} loop={true} className="h-full w-full" />
                     )}
                 </div>
 

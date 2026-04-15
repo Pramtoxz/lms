@@ -1,5 +1,5 @@
-import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { BookOpen, Calendar, GraduationCap, Users } from 'lucide-react';
 
@@ -28,7 +28,7 @@ export default function Dashboard({ stats }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-                            <BookOpen className="h-4 w-4 text-muted-foreground" />
+                            <BookOpen className="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_courses}</div>
@@ -37,7 +37,7 @@ export default function Dashboard({ stats }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <Users className="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_students}</div>
@@ -46,7 +46,7 @@ export default function Dashboard({ stats }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
-                            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                            <GraduationCap className="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_enrollments}</div>
@@ -55,7 +55,7 @@ export default function Dashboard({ stats }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Meetings</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <Calendar className="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_meetings}</div>

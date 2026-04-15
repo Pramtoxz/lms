@@ -1,9 +1,9 @@
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Calendar } from 'lucide-react';
 
@@ -53,7 +53,7 @@ export default function Create({ courses }: Props) {
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold sm:text-3xl">Create Meeting</h1>
-                        <p className="text-sm text-muted-foreground sm:text-base">Schedule a new Zoom meeting</p>
+                        <p className="text-muted-foreground text-sm sm:text-base">Schedule a new Zoom meeting</p>
                     </div>
                 </div>
 
@@ -75,10 +75,7 @@ export default function Create({ courses }: Props) {
                                 <Label htmlFor="course_id">
                                     Course <span className="text-destructive">*</span>
                                 </Label>
-                                <Select
-                                    value={data.course_id}
-                                    onValueChange={(value) => setData('course_id', value)}
-                                >
+                                <Select value={data.course_id} onValueChange={(value) => setData('course_id', value)}>
                                     <SelectTrigger id="course_id">
                                         <SelectValue placeholder="Select a course" />
                                     </SelectTrigger>
@@ -90,9 +87,7 @@ export default function Create({ courses }: Props) {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.course_id && (
-                                    <p className="text-sm text-destructive">{errors.course_id}</p>
-                                )}
+                                {errors.course_id && <p className="text-destructive text-sm">{errors.course_id}</p>}
                             </div>
 
                             {/* Start Time */}
@@ -107,12 +102,8 @@ export default function Create({ courses }: Props) {
                                     onChange={(e) => setData('start_time', e.target.value)}
                                     min={getMinDateTime()}
                                 />
-                                {errors.start_time && (
-                                    <p className="text-sm text-destructive">{errors.start_time}</p>
-                                )}
-                                <p className="text-xs text-muted-foreground">
-                                    Meeting must be scheduled at least 5 minutes from now
-                                </p>
+                                {errors.start_time && <p className="text-destructive text-sm">{errors.start_time}</p>}
+                                <p className="text-muted-foreground text-xs">Meeting must be scheduled at least 5 minutes from now</p>
                             </div>
 
                             {/* Duration */}
@@ -120,10 +111,7 @@ export default function Create({ courses }: Props) {
                                 <Label htmlFor="duration">
                                     Duration (minutes) <span className="text-destructive">*</span>
                                 </Label>
-                                <Select
-                                    value={data.duration}
-                                    onValueChange={(value) => setData('duration', value)}
-                                >
+                                <Select value={data.duration} onValueChange={(value) => setData('duration', value)}>
                                     <SelectTrigger id="duration">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -138,15 +126,13 @@ export default function Create({ courses }: Props) {
                                         <SelectItem value="240">4 hours</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.duration && (
-                                    <p className="text-sm text-destructive">{errors.duration}</p>
-                                )}
+                                {errors.duration && <p className="text-destructive text-sm">{errors.duration}</p>}
                             </div>
 
                             {/* Error Message */}
                             {'error' in errors && typeof errors.error === 'string' && (
-                                <div className="rounded-lg border border-destructive bg-destructive/10 p-3">
-                                    <p className="text-sm text-destructive">{errors.error}</p>
+                                <div className="border-destructive bg-destructive/10 rounded-lg border p-3">
+                                    <p className="text-destructive text-sm">{errors.error}</p>
                                 </div>
                             )}
 
@@ -161,11 +147,7 @@ export default function Create({ courses }: Props) {
                                 >
                                     Cancel
                                 </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="w-full sm:w-auto"
-                                >
+                                <Button type="submit" disabled={processing} className="w-full sm:w-auto">
                                     {processing ? 'Creating...' : 'Create Meeting'}
                                 </Button>
                             </div>

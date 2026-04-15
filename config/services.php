@@ -42,6 +42,11 @@ return [
         'webhook_secret_token' => env('ZOOM_WEBHOOK_SECRET_TOKEN'),
     ],
 
+    'capstar' => [
+        'api_url' => env('CAPSTAR_API_URL'),
+        'secret_key' => env('CAPSTAR_SECRET_KEY'),
+    ],
+
     'recaptcha' => [
         'site_key' => env('RECAPTCHA_SITE_KEY'),
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
