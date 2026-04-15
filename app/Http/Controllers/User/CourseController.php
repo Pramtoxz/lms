@@ -34,6 +34,10 @@ class CourseController extends Controller
 
         $enrollments->getCollection()->transform(function ($enrollment) {
             $enrollment->first_lesson_id = $enrollment->course->lessons->first()?->id;
+            $enrollment->passed_exam = \App\Models\ExamResult::where('user_id', Auth::id())
+                ->where('course_id', $enrollment->course_id)
+                ->where('is_passed', true)
+                ->exists();
 
             return $enrollment;
         });
@@ -163,7 +167,6 @@ class CourseController extends Controller
                 'status' => $newProgress >= 100 ? 'completed' : 'ongoing',
             ]);
 
-            // Auto-redirect to exam if course completed
             if ($newProgress >= 100) {
                 return redirect()->route('courses.exam', $course->id)
                     ->with('success', 'Course completed! Ready to take the exam.');

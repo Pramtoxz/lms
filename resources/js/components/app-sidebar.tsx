@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid, Receipt, Search, UserCheck, UserPlus } from 'lucide-react';
+import { Activity, BookOpen, Calendar, FileText, Folder, GraduationCap, LayoutGrid, Receipt, Search, UserCheck, UserPlus } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -55,6 +55,21 @@ export function AppSidebar() {
             title: 'Attendances',
             url: '/admin/attendances',
             icon: UserCheck,
+        },
+        {
+            title: 'Monitoring',
+            url: '#',
+            icon: Activity,
+            items: [
+                {
+                    title: 'Page Visits',
+                    url: '/user-monitoring/visits-monitoring',
+                },
+                {
+                    title: 'Authentication',
+                    url: '/user-monitoring/authentications-monitoring',
+                },
+            ],
         },
     ];
 
